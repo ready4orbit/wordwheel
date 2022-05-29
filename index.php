@@ -37,7 +37,6 @@
                 <button class="keyboard-button">p</button>
             </div>
             <div class="second-row">
-                <button class="keyboard-button keyboard-tool">&#60;</button>
                 <button class="keyboard-button">a</button>
                 <button class="keyboard-button">s</button>
                 <button class="keyboard-button">d</button>
@@ -47,7 +46,6 @@
                 <button class="keyboard-button">j</button>
                 <button class="keyboard-button">k</button>
                 <button class="keyboard-button">l</button>
-                <button class="keyboard-button keyboard-tool">&#62;</button>
             </div>
             <div class="third-row">
                 <button class="keyboard-button" style="background: #8b8b8b">Del</button>
