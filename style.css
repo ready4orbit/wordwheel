@@ -160,6 +160,8 @@ button {
 }
 
 #keyboard-cont {
+    width: 40px;
+    max-width: 97%;
     margin: 0;
     position: fixed;
     bottom: .6rem;
@@ -178,6 +180,7 @@ button {
 }
 
 .keyboard-button {
+    min-width: 35px;
     font-size: 1rem;
     font-weight: 700;
     padding: 0.55rem;

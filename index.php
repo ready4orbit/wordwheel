@@ -58,7 +58,7 @@
                 <button class="keyboard-button">b</button>
                 <button class="keyboard-button">n</button>
                 <button class="keyboard-button">m</button>
-                <button class="keyboard-button keyboard-tool">Enter</button>
+                <button class="keyboard-button keyboard-tool">Ent</button>
             </div>
         </div>
     </div>
