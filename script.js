@@ -199,11 +199,16 @@ function insertLetter (pressedKey) {
             
             for (var i = 1; i <= WORDS[prevClue].length; i++) {
                 if (i < WORDS[prevClue].length) {
+                    var a = i - 1;
+                    var b = i;
                     // if there is a letter keep it, otherwise add a space
-                    let checkLetter = currentGuesses[prevClue].slice(i-1,i);
-                    if (checkLetter != undefined) {
+                    let checkLetter = String(currentGuesses[prevClue]);
+                    checkLetter = checkLetter.slice(a,b);
+                    if (checkLetter != undefined && checkLetter != '') {
+                        console.log('ZcheckLetter:'+checkLetter)
                         prevGuess = prevGuess.concat(checkLetter)
                     } else {
+                        console.log('YcheckLetter:'+checkLetter)
                         prevGuess = prevGuess.concat(spacer)
                     }
                 } else if (i = WORDS[prevClue].length) {
