@@ -1,0 +1,189 @@
+body {
+    background: #e9e9e9;
+    padding: 0;
+    margin: 0;
+    
+    font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+
+#you-win {
+    display: none;
+    
+    position: absolute;
+    width: 200px;
+    z-index: 10;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    
+    background: white;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    
+    padding: 3rem;
+    text-align: center;
+}
+
+#game-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    margin: 0;
+}
+
+#logo-cont {
+    flex-grow: 1;
+    
+    text-align: center;
+    font-size: 2.3rem;
+    margin: 2rem;
+    font-weight: 700;
+}
+
+#game-lines {
+    position: absolute;
+    top: 11.5rem;
+    left: 0;
+    right: 0;
+    
+    z-index: 0;
+}
+
+#game-lines-left {
+    height: 3px;
+    width: 50%;
+    display: inline-block;
+}
+
+#game-lines-right {
+    height: 3px;
+    width: 50%;
+    display: inline-block;
+}
+
+#game-board {
+    flex-grow: 1;
+    display: flex;
+    width: 400px;
+    align-items: center;
+    flex-direction: column;
+}
+
+.clue-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.letter-row {
+    display: flex;
+    height: 5rem;
+    justify-content: center;
+    align-items: center;
+    
+    z-index: 1;
+    background: #e9e9e9;
+}
+
+.letter-box {
+    border: 2px solid gray;
+    border-radius: 3px;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+    background: #f9f9f9;
+}
+
+.letter-box-6 {
+    font-size: 2.5rem;
+    height: 3rem;
+    width: 3rem;
+}
+
+.letter-box-7 {
+    font-size: 2.2rem;
+    height: 2.7rem;
+    width: 2.7rem;
+}
+
+.letter-box-8 {
+    font-size: 1.8rem;
+    height: 2.3rem;
+    width: 2.3rem;
+}
+
+.letter-box-9 {
+    font-size: 1.7rem;
+    height: 2rem;
+    width: 2rem;
+}
+
+.letter-box-10 {
+    font-size: 1.5rem;
+    height: 1.8rem;
+    width: 1.8rem;
+}
+
+.filled-box {
+  border: 2px solid black;
+}
+
+.clue {
+    display: flex;
+    
+    text-align: center;
+    margin: 2rem;
+    font-size: 1.5rem;
+    
+}
+
+#progress-bar div {
+    flex-grow: 1;
+
+    font-size: 2rem;
+    font-weight: 700;
+    padding: .3rem;
+}
+
+.active-dot {
+    color: #aaaaaa;
+}
+
+button {
+    border: 1px solid #000000;
+    border-radius: 5px;
+}
+
+#keyboard-cont {
+    margin: 0;
+    position: fixed;
+    bottom: .6rem;
+    transform: translateY(0%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#keyboard-cont div {
+    display: flex;
+}
+
+.second-row {
+    margin: 0.5rem 0;
+}
+
+.keyboard-button {
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.5rem;
+    margin: 0 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.keyboard-tool {
+    background: #aaaaaa;
+}
