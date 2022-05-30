@@ -22,7 +22,7 @@ import { CLUES } from "./wheel.js";
 
 // set some variables
 const NUMBER_OF_WORDS = WORDS.length;
-let animDelay = 6;
+let animDelay = 6; // was 6
 let inactiveLine = '#aaaaaa'
 let activeLine = '#000000'
 let correctLine = '#00ed09'
@@ -276,6 +276,7 @@ function insertLetter (pressedKey) {
         // Add the letter to existing guess
         var curGuessStr = currentGuess.substr(0, thisLetter).concat(box.textContent,currentGuess.substr(thisLetter + 1))
         currentGuess = curGuessStr;
+        currentGuesses.splice(curClue, 1, currentGuess);
         
         // if this is the first letter, add to end of previous word
         if (thisLetter === 0) {
@@ -349,9 +350,9 @@ function insertLetter (pressedKey) {
         // color game board
         colorBoxandLine()
         
-        // iterate to next letter, if it's the last go to the next wood
+        // if correct word, go to next clue
         thisLetter += 1
-        if (thisLetter == WORDS[curClue].length) {
+        if (currentGuess == WORDS[curClue]) {
             var delay = 250
             setTimeout(()=> {
                 // after short delay, go to next word
@@ -446,7 +447,7 @@ function nextWord () {
         curClue = 0;
     }
 
-    slideOutClue(curClue,"left");
+    slideOutClue("left");
 }
 
 function prevWord () {
@@ -458,10 +459,10 @@ function prevWord () {
         curClue = NUMBER_OF_WORDS - 1;
     }
 
-    slideOutClue(curClue,"right");
+    slideOutClue("right");
 }
 
-function slideOutClue (curClue, slideDir) {
+function slideOutClue (slideDir) {
     for (let i = 0; i <= 50; i++) {
         let delay = animDelay * i
         
@@ -476,6 +477,7 @@ function slideOutClue (curClue, slideDir) {
             setTimeout(()=> {
                 // slide div
                 if (slideDir == 'left') {
+                    console.log('diagOut50:'+marginMove)
                     document.getElementById("game-board").style.marginRight = marginMove;
                     
                     document.getElementById("game-lines-right").style.width = lineBig;
@@ -492,14 +494,14 @@ function slideOutClue (curClue, slideDir) {
             setTimeout(()=> {
                 // reset board and line color
                 initBoard()
+                
+                // invisibly move game board to other side
                 if (slideDir == 'left') {
-                    document.getElementById("game-board").style.marginRight = 0;
                     document.getElementById("game-board").style.marginLeft = marginMove;
                     
                     document.getElementById("game-lines-left").style.width = '100%';
                     document.getElementById("game-lines-right").style.width = '0%';
                 } else {
-                    document.getElementById("game-board").style.marginLeft = 0;
                     document.getElementById("game-board").style.marginRight = marginMove;
                     
                     document.getElementById("game-lines-left").style.width = '0%';
@@ -513,6 +515,7 @@ function slideOutClue (curClue, slideDir) {
 }
 
 function slideInClue(slideDir) {
+    console.log('diagIn:'+slideDir)
     for (let k = 0; k <= 50; k++) {
         let delay = animDelay * k
         let j = 50 - k
@@ -526,11 +529,14 @@ function slideInClue(slideDir) {
 
         setTimeout(()=> {
             if (slideDir == 'left') {
+                console.log('diagIn50:'+marginMove)
+                document.getElementById("game-board").style.marginRight = 0;
                 document.getElementById("game-board").style.marginLeft = marginMove;
                 
                 document.getElementById("game-lines-left").style.width = lineBig;
                 document.getElementById("game-lines-right").style.width = lineSmall;
             } else {
+                document.getElementById("game-board").style.marginLeft = 0;
                 document.getElementById("game-board").style.marginRight = marginMove;
                 
                 document.getElementById("game-lines-left").style.width = lineSmall;
