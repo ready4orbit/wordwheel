@@ -35,13 +35,10 @@ body {
     align-items: center;
     overflow: hidden;
     margin: 0;
-    padding: 0;
-    
-    background: red;
+    padding: 0;    
 }
 
 #flex-holder {
-    background: blue;
     height: 100%;
     
     display: flex;
@@ -183,9 +180,7 @@ button {
     color: #000000;
 }
 
-#keyboard-cont {
-    background: green;
-    
+#keyboard-cont {    
     order: 3;
     
     padding: 0 0 10px 0;
