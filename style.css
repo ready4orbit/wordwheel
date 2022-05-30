@@ -149,8 +149,8 @@ body {
 }
 
 .correct-box {
-    border: 2px solid #00ed09;
-    background: #b8f7ba;
+    border: 2px solid #63cd66;
+    background: #c4ebc6;
 }
 
 .clue {
@@ -171,7 +171,15 @@ body {
 }
 
 .active-dot {
-    color: #aaaaaa;
+    animation:blinkingText 1s infinite;
+}
+
+@keyframes blinkingText{
+    0%{     opacity: 1; }
+    49%{    opacity: 1; }
+    60%{    opacity: 0; }
+    99%{    opacity: 0; }
+    100%{   opacity: 1; }
 }
 
 button {

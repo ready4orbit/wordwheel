@@ -25,8 +25,8 @@ const NUMBER_OF_WORDS = WORDS.length;
 let animDelay = 6; // was 6
 let inactiveLine = '#aaaaaa'
 let activeLine = '#000000'
-let correctLine = '#00ed09'
-let correctBG = '#b8f7ba'
+let correctLine = '#63cd66'
+let correctBG = '#c4ebc6'
 let leftLineColor = inactiveLine;
 let rightLineColor = inactiveLine;
 let gameOver = false;
@@ -118,7 +118,6 @@ function initBoard() {
             box.textContent = currentGuess[j]
             
             // set the right color for the box
-            // FIXIT include green for correct
             if (currentGuess[j] != ' ') {                
                 // if filled box, the first empty box is the next one
                 lastLetter = j + 1;
@@ -153,20 +152,7 @@ function initBoard() {
     board.appendChild(clueText)
     
     // set progress
-    let progressBar = document.getElementById("progress-bar");
-    progressBar.innerHTML = "";
-    
-    for (let k = 0; k < NUMBER_OF_WORDS; k++) {
-        let progressDot = document.createElement("div")
-        progressDot.textContent = '•'
-        
-        // if active doc
-        if (k == curClue) {
-            progressDot.classList.add("active-dot")
-        }
-        
-        progressBar.appendChild(progressDot)
-    }
+    createProgress();
 }
 
 initBoard()
@@ -258,6 +244,38 @@ function setLineColor(thisLine, thisColor) {
     }
     
     
+}
+
+function createProgress() {
+    
+    let progressBar = document.getElementById("progress-bar");
+    progressBar.innerHTML = "";
+    
+    for (let k = 0; k < NUMBER_OF_WORDS; k++) {
+        let progressDot = document.createElement("div")
+        progressDot.textContent = '•'
+        
+        // if the correct word, make green
+        if (currentGuesses[k] == WORDS[k]) {
+            // make bright green
+            progressDot.style.color = correctLine;
+            
+            // if active make blink
+            if (k == curClue) {
+                progressDot.classList.add("active-dot")
+            }
+        } else { // else if not correct, make grey
+            // make gray
+            progressDot.style.color = activeLine;
+            
+            // if active blink
+            if (k == curClue) {
+                progressDot.classList.add("active-dot")
+            }
+        }
+        
+        progressBar.appendChild(progressDot)
+    }
 }
 
 function insertLetter (pressedKey) {
@@ -477,7 +495,6 @@ function slideOutClue (slideDir) {
             setTimeout(()=> {
                 // slide div
                 if (slideDir == 'left') {
-                    console.log('diagOut50:'+marginMove)
                     document.getElementById("game-board").style.marginRight = marginMove;
                     
                     document.getElementById("game-lines-right").style.width = lineBig;
@@ -515,7 +532,6 @@ function slideOutClue (slideDir) {
 }
 
 function slideInClue(slideDir) {
-    console.log('diagIn:'+slideDir)
     for (let k = 0; k <= 50; k++) {
         let delay = animDelay * k
         let j = 50 - k
@@ -529,7 +545,6 @@ function slideInClue(slideDir) {
 
         setTimeout(()=> {
             if (slideDir == 'left') {
-                console.log('diagIn50:'+marginMove)
                 document.getElementById("game-board").style.marginRight = 0;
                 document.getElementById("game-board").style.marginLeft = marginMove;
                 
