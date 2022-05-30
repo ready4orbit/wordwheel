@@ -634,11 +634,11 @@ function handleGesture() {
   if (touchendX > touchstartX) prevWord()
 }
 
-document.addEventListener('touchstart', e => {
+document.getElementById("game-board").addEventListener('touchstart', e => {
   touchstartX = e.changedTouches[0].screenX
 })
 
-document.addEventListener('touchend', e => {
+document.getElementById("game-board").addEventListener('touchend', e => {
   touchendX = e.changedTouches[0].screenX
   handleGesture()
 })
