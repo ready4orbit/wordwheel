@@ -173,6 +173,7 @@ initBoard(curClue)
 
 function insertLetter (pressedKey) {
     var spacer = ' ';
+    pressedKey = pressedKey.toLowerCase()
     
     // if this is the first letter, add to end of previous word
     if (thisLetter === 0) {
@@ -205,10 +206,8 @@ function insertLetter (pressedKey) {
                     let checkLetter = String(currentGuesses[prevClue]);
                     checkLetter = checkLetter.slice(a,b);
                     if (checkLetter != undefined && checkLetter != '') {
-                        console.log('ZcheckLetter:'+checkLetter)
                         prevGuess = prevGuess.concat(checkLetter)
                     } else {
-                        console.log('YcheckLetter:'+checkLetter)
                         prevGuess = prevGuess.concat(spacer)
                     }
                 } else if (i = WORDS[prevClue].length) {
@@ -225,8 +224,6 @@ function insertLetter (pressedKey) {
         let leftLine = document.getElementById("game-lines-left");
         leftLine.style.backgroundColor = leftLineColor;
     }
-    
-    pressedKey = pressedKey.toLowerCase()
 
     let row = document.getElementsByClassName("letter-row")[0]
     let box = row.children[thisLetter]
@@ -235,7 +232,7 @@ function insertLetter (pressedKey) {
     box.textContent = pressedKey
     box.classList.add("filled-box")
     
-    // FIX THIS WORKIT
+    // Add the letter in the middle of the word
     var curGuessStr = currentGuess.substr(0, thisLetter).concat(box.textContent,currentGuess.substr(thisLetter + 1))
     currentGuess = curGuessStr;
     
@@ -243,9 +240,6 @@ function insertLetter (pressedKey) {
     
     // add to the guesses array
     logGuess()
-    
-    //check if all the guesses are correct
-    checkGuesses()
     
     // go to the next word if at the end and set the first letter to this letter
     if (thisLetter == WORDS[curClue].length) {
@@ -258,7 +252,6 @@ function insertLetter (pressedKey) {
         if (currentGuesses[nextClue] == undefined) {
             currentGuesses.splice(nextClue, 1, pressedKey);
         } else {
-            // FIXIT
             var nextGuess = pressedKey.concat(currentGuesses[nextClue].substr(1));
             
             currentGuesses.splice(nextClue, 1, nextGuess);
@@ -269,8 +262,16 @@ function insertLetter (pressedKey) {
         let rightLine = document.getElementById("game-lines-right");
         rightLine.style.backgroundColor = rightLineColor;
         
+        //check if all the guesses are correct
+        checkGuesses()
+        
         nextWord()
+    } else {
+        //check if all the guesses are correct
+        checkGuesses()
     }
+    
+    
 }
 
 function deleteLetter () {
@@ -367,7 +368,7 @@ function logGuess () {
     
     //console.log(currentGuess)
     //console.log('currentGuess:'+currentGuess)
-    console.log(currentGuesses)
+    //console.log(currentGuesses)
 }
 
 function nextWord () {
@@ -474,10 +475,13 @@ function slideInClue(slideDir) {
 }
 
 function checkGuesses () {
+    
     // does the current guess match the current word
     if (currentGuess == WORDS[curClue]) {
         //check all words        
         var z = 0;
+        
+        // do all guesses match all words
         for (var i = 0; i < WORDS.length; i++) {
             if (currentGuesses[i] === WORDS[i]) {
                 z++;
@@ -488,10 +492,6 @@ function checkGuesses () {
             youWin()
         }
     }
-        
-    //currentGuesses.splice(curClue, 1, currentGuess)
-    
-    // do all guesses match all words
 }
 
 function youWin() {
