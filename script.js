@@ -16,42 +16,50 @@ https://workshops.hackclub.com/spinning_wheel/
 https://www.freecodecamp.org/news/build-a-wordle-clone-in-javascript/
 **/
 
+// Load game words and clues
 import { WORDS } from "./wheel.js";
 import { CLUES } from "./wheel.js";
 
+// set some variables
 const NUMBER_OF_WORDS = WORDS.length;
 let animDelay = 6;
+let inactiveLine = '#aaaaaa'
+let activeLine = '#000000'
+let correctLine = '#00ed09'
+let correctBG = '#b8f7ba'
+let leftLineColor = inactiveLine;
+let rightLineColor = inactiveLine;
+let gameOver = false;
+
+// set some variables used to track the game
 let currentGuess = '';
 let currentGuesses = Array(NUMBER_OF_WORDS);
 let thisLetter = 0;
 let curClue = 0;
-let leftLineColor = '#aaaaaa';
-let rightLineColor = '#aaaaaa';
 
-let gameOver = false;
-
-// don't need after setting new checkAnswer function
-let rightGuessString = WORDS[Math.floor(Math.random() * NUMBER_OF_WORDS)]
-
-
-
-function initBoard(varClue) {
-    let readableClueNum = varClue+1;
+// function to create the visible word and clue based on a clue #
+function initBoard() {
     
-    // create board
+    // create a human readable version of the number
+    let readableClueNum = curClue+1;
+    
+    // select the board div
     let board = document.getElementById("game-board");
     
+    // reset thisletter to find first empty word box
     thisLetter = 0;
     
-    // check if existing guess
+    // check if there is a guess already and set universal variable
     if (currentGuesses[curClue] != '' && currentGuesses[curClue] != undefined) {
+        // if it's not empty or undefined, set the universal variable to the previous entry
         currentGuess = currentGuesses[curClue]
     } else {
+        // otherwise set universal variable blank
         currentGuess = '';
     }
     
-    
-    board.innerHTML = ""; //reset gameboard
+    //reset gameboard
+    board.innerHTML = ""; 
     
     // create lines
     let gameLines = document.createElement("div")
@@ -61,23 +69,9 @@ function initBoard(varClue) {
     leftLine.id = "game-lines-left"
     rightLine.id = "game-lines-right"
     
-    // if first and last letter set, change color
-    let checkFirst = currentGuess.slice(0,1);
-    if (checkFirst != '' && checkFirst != ' ') {
-        leftLineColor = '#000000';
-    } else {
-        leftLineColor = '#aaaaaa';
-    }
-    
-    let checkLast = currentGuess.slice(WORDS[varClue].length - 1,WORDS[varClue].length);
-    if (checkLast != '' && checkLast != ' ') {
-        rightLineColor = '#000000';
-    } else {
-        rightLineColor = '#aaaaaa';
-    }
-    
-    leftLine.style.backgroundColor = leftLineColor;
-    rightLine.style.backgroundColor = rightLineColor;
+    // create background lines
+    leftLine.style.backgroundColor = inactiveLine;
+    rightLine.style.backgroundColor = inactiveLine;
     gameLines.appendChild(leftLine)
     gameLines.appendChild(rightLine)
     board.appendChild(gameLines)
@@ -93,63 +87,69 @@ function initBoard(varClue) {
     row.className = "letter-row"
     
     // active letter parameters
-    let emptyWord = false;
+    let emptyWord = true; // assume it's empty
     let lastLetter = 0;
     let firstEmpty = 0;
-
-    for (let j = 0; j < WORDS[varClue].length; j++) {
+    
+    // for each letter of the answer word, create a box
+    for (let j = 0; j < WORDS[curClue].length; j++) {
         let box = document.createElement("div")
         
-        // right size the input word
+        // set text size based on the length of the answer word
         var styleSize = "letter-box"
         box.className = styleSize
         
-        if (WORDS[varClue].length <= 6) {
+        if (WORDS[curClue].length <= 6) {
             styleSize = styleSize.concat("-6")
-        } else if (WORDS[varClue].length > 6) {
-            styleSize = styleSize.concat("-",WORDS[varClue].length)
+        } else if (WORDS[curClue].length > 6) {
+            styleSize = styleSize.concat("-",WORDS[curClue].length)
         }
         
         box.classList.add(styleSize)
         
-        // if it isn't the last box, give it a right margin
-        if (j < WORDS[varClue].length - 1) {
+        // if it isn't the last box, give it a right margin to cover the lines in the background
+        if (j < WORDS[curClue].length - 1) {
             box.style.marginRight = "4px"
         }
         
-        // add letter if there is already a guess
+        // check if there is a guess already and fill the box with the guess
         if (currentGuess[j] != '' && currentGuess[j] != undefined) {
+            // add letter if there is already a guess letter
             box.textContent = currentGuess[j]
             
-            if (currentGuess[j] != ' ') {
-                box.classList.add("filled-box")
+            // set the right color for the box
+            // FIXIT include green for correct
+            if (currentGuess[j] != ' ') {                
+                // if filled box, the first empty box is the next one
                 lastLetter = j + 1;
-            } else {
-                if (emptyWord == false) {
+            } else { 
+                // if the letter in the guess is blank
+                if (emptyWord == true) {
                     firstEmpty = j;
                 }
-                emptyWord = true
+                emptyWord = false
             }
         }
         
         row.appendChild(box)
     }
-    
-    logGuess();
-    
+        
     // set active letter
-    if (emptyWord == false) {
+    if (emptyWord == true) {
         thisLetter = lastLetter;
     } else {
         thisLetter = firstEmpty;
     }
-
+    
     board.appendChild(row)
+    
+    // set colors
+    colorBoxandLine();
     
     // show clue
     let clueText = document.createElement("div")
     clueText.className = "clue"
-    clueText.textContent = CLUES[varClue]
+    clueText.textContent = CLUES[curClue]
     board.appendChild(clueText)
     
     // set progress
@@ -161,7 +161,7 @@ function initBoard(varClue) {
         progressDot.textContent = '•'
         
         // if active doc
-        if (k == varClue) {
+        if (k == curClue) {
             progressDot.classList.add("active-dot")
         }
         
@@ -169,195 +169,261 @@ function initBoard(varClue) {
     }
 }
 
-initBoard(curClue)
+initBoard()
 
-function insertLetter (pressedKey) {
-    var spacer = ' ';
-    pressedKey = pressedKey.toLowerCase()
-    
-    // if this is the first letter, add to end of previous word
-    if (thisLetter === 0) {
-        var prevClue = curClue - 1;
-        if (prevClue < 0) {
-            prevClue = WORDS.length - 1;
-        }
-        
-        // if previous guess if undefined
-        if (currentGuesses[prevClue] == undefined) {
-            var prevGuess = '';
-            
-            for (var i = 1; i <= WORDS[prevClue].length; i++) {
-                if (i < WORDS[prevClue].length) {
-                    prevGuess = prevGuess.concat(spacer);
-                } else if (i = WORDS[prevClue].length) {
-                    prevGuess = prevGuess.concat(pressedKey);
-                }
-            }
-            
-            currentGuesses.splice(prevClue, 1, prevGuess);
-        } else {
-            var prevGuess = '';
-            
-            for (var i = 1; i <= WORDS[prevClue].length; i++) {
-                if (i < WORDS[prevClue].length) {
-                    var a = i - 1;
-                    var b = i;
-                    // if there is a letter keep it, otherwise add a space
-                    let checkLetter = String(currentGuesses[prevClue]);
-                    checkLetter = checkLetter.slice(a,b);
-                    if (checkLetter != undefined && checkLetter != '') {
-                        prevGuess = prevGuess.concat(checkLetter)
-                    } else {
-                        prevGuess = prevGuess.concat(spacer)
-                    }
-                } else if (i = WORDS[prevClue].length) {
-                    // if at end, add letter
-                    prevGuess = prevGuess.concat(pressedKey);
-                }
-            }
-            
-            currentGuesses.splice(prevClue, 1, prevGuess);
-        }
-        
-        // change line color
-        leftLineColor = '#000000';
-        let leftLine = document.getElementById("game-lines-left");
-        leftLine.style.backgroundColor = leftLineColor;
-    }
-
+function colorBoxandLine () {
     let row = document.getElementsByClassName("letter-row")[0]
-    let box = row.children[thisLetter]
     
-    // add to the screen
-    box.textContent = pressedKey
-    box.classList.add("filled-box")
-    
-    // Add the letter in the middle of the word
-    var curGuessStr = currentGuess.substr(0, thisLetter).concat(box.textContent,currentGuess.substr(thisLetter + 1))
-    currentGuess = curGuessStr;
-    
-    thisLetter += 1
-    
-    // add to the guesses array
-    logGuess()
-    
-    // go to the next word if at the end and set the first letter to this letter
-    if (thisLetter == WORDS[curClue].length) {
-        var nextClue = curClue + 1;
-        if (nextClue >= NUMBER_OF_WORDS) {
-            nextClue = 0;
-        }
+    // iterate through each letter box
+    for (let i = 0; i < row.children.length; i++) {
+        // read box contents
+        let box = row.children[i]
         
-        // if next guess if undefined
-        if (currentGuesses[nextClue] == undefined) {
-            currentGuesses.splice(nextClue, 1, pressedKey);
-        } else {
-            var nextGuess = pressedKey.concat(currentGuesses[nextClue].substr(1));
+        
+        // if current guess is the correct word, set to green
+        if (currentGuess == WORDS[curClue]) {
+            box.classList.add("correct-box")
+            setLineColor('left', correctLine)
+            setLineColor('right', correctLine)
+        } else { // if not, remove green
+            box.classList.remove("correct-box")
+            let boxContents = box.textContent
             
-            currentGuesses.splice(nextClue, 1, nextGuess);
+            // if there is a guess letter, figure out how to color it
+            if (boxContents != '' && boxContents != ' ' && boxContents != undefined) {
+                box.classList.add("filled-box")
+
+                // for first letter, check if previous word is correct
+                if (i == 0) {
+                    // create previous guess #
+                    var prevClue = curClue - 1;
+                    if (prevClue < 0) {
+                        prevClue = WORDS.length - 1;
+                    }
+                    
+                    // if previous word correct, set green
+                    if (currentGuesses[prevClue] == WORDS[prevClue]) {
+                        // set box and line green
+                        box.classList.add("correct-box")
+                        setLineColor('left', correctLine)
+                    } else {
+                        // if not, set line black
+                        setLineColor('left', activeLine)
+                    }
+                }
+
+                // if it's the last letter, check if next word is correct
+                if (i == row.children.length - 1) {
+                    // create next guess #
+                    var nextClue = curClue + 1;
+                    if (nextClue >= NUMBER_OF_WORDS) {
+                        nextClue = 0;
+                    }
+                    
+                    // if next word correct, set green
+                    if (currentGuesses[nextClue] == WORDS[nextClue]) {
+                        // set box and line green
+                        box.classList.add("correct-box")
+                        setLineColor('right', correctLine)
+                    } else {
+                        // if not, set line black
+                        setLineColor('right', activeLine)
+                    }                    
+                }
+            } else {
+                // if the box IS blank, set line and box color
+                box.classList.remove("filled-box")
+                
+                // if first box, change left line color
+                if (i == 0) { 
+                    setLineColor('left', inactiveLine) 
+                }
+                
+                // if last box, change right line color
+                if (i == row.children.length - 1) {
+                    setLineColor('right', inactiveLine)                  
+                }
+            }
         }
-        
-        // change line color
-        rightLineColor = '#000000';
-        let rightLine = document.getElementById("game-lines-right");
-        rightLine.style.backgroundColor = rightLineColor;
-        
-        //check if all the guesses are correct
-        checkGuesses()
-        
-        nextWord()
-    } else {
-        //check if all the guesses are correct
-        checkGuesses()
+    }
+}
+
+function setLineColor(thisLine, thisColor) {
+    // set a given line a given color
+    
+    if (thisLine == 'left') {
+        document.getElementById("game-lines-left").style.backgroundColor = thisColor;
+    } else if (thisLine == 'right') {
+        document.getElementById("game-lines-right").style.backgroundColor = thisColor;
     }
     
     
 }
 
+function insertLetter (pressedKey) {
+    var spacer = ' ';
+    pressedKey = pressedKey.toLowerCase()
+    
+    // if already at the end of the word, skip everything and go to next word
+    if (thisLetter == WORDS[curClue].length) {
+        nextWord()
+    } else { // if not, add letter
+        // identify the letter pressed
+        let row = document.getElementsByClassName("letter-row")[0]
+        let box = row.children[thisLetter]
+        box.textContent = pressedKey
+        
+        // Add the letter to existing guess
+        var curGuessStr = currentGuess.substr(0, thisLetter).concat(box.textContent,currentGuess.substr(thisLetter + 1))
+        currentGuess = curGuessStr;
+        
+        // if this is the first letter, add to end of previous word
+        if (thisLetter === 0) {
+            var prevClue = curClue - 1;
+            if (prevClue < 0) {
+                prevClue = WORDS.length - 1;
+            }
+
+            // if previous guess if undefined
+            if (currentGuesses[prevClue] == undefined) {
+                var prevGuess = '';
+
+                for (var i = 1; i <= WORDS[prevClue].length; i++) {
+                    if (i < WORDS[prevClue].length) {
+                        prevGuess = prevGuess.concat(spacer);
+                    } else if (i = WORDS[prevClue].length) {
+                        prevGuess = prevGuess.concat(pressedKey);
+                    }
+                }
+
+                currentGuesses.splice(prevClue, 1, prevGuess);
+            } else {
+                var prevGuess = '';
+
+                for (var i = 1; i <= WORDS[prevClue].length; i++) {
+                    if (i < WORDS[prevClue].length) {
+                        var a = i - 1;
+                        var b = i;
+                        // if there is a letter keep it, otherwise add a space
+                        let checkLetter = String(currentGuesses[prevClue]);
+                        checkLetter = checkLetter.slice(a,b);
+                        if (checkLetter != undefined && checkLetter != '') {
+                            prevGuess = prevGuess.concat(checkLetter)
+                        } else {
+                            prevGuess = prevGuess.concat(spacer)
+                        }
+                    } else if (i = WORDS[prevClue].length) {
+                        // if at end, add letter
+                        prevGuess = prevGuess.concat(pressedKey);
+                    }
+                }
+
+                currentGuesses.splice(prevClue, 1, prevGuess);
+            }
+        }
+
+        // if this is the last letter, add to the beginning of the next word
+        if (thisLetter == WORDS[curClue].length - 1) {
+            // identify the next word
+            var nextClue = curClue + 1;
+            if (nextClue >= NUMBER_OF_WORDS) {
+                nextClue = 0;
+            }
+            
+            // if next guess if undefined, make it, other add it
+            if (currentGuesses[nextClue] == undefined) {
+                currentGuesses.splice(nextClue, 1, pressedKey);
+            } else {
+                var nextGuess = pressedKey.concat(currentGuesses[nextClue].substr(1));
+
+                currentGuesses.splice(nextClue, 1, nextGuess);
+            }
+        }
+        
+        // add to the guesses array
+        logGuess()
+        
+        //check if all the guesses are correct
+        checkGuesses()
+
+        // color game board
+        colorBoxandLine()
+        
+        // iterate to next letter, if it's the last go to the next wood
+        thisLetter += 1
+        if (thisLetter == WORDS[curClue].length) {
+            var delay = 250
+            setTimeout(()=> {
+                // after short delay, go to next word
+                nextWord()
+            }, delay)
+        }
+    }
+}
+
 function deleteLetter () {
     var spacer = ' ';
     
+    // if we're already at the beginning, go to previous word
     if (thisLetter === 0) {
         prevWord()
         return;
-    }
-    
-    // if deleting the first letter, remove the last letter of the previous word
-    if (thisLetter == 1) {
-        var prevClue = curClue - 1;
-        if (prevClue < 0) {
-            prevClue = WORDS.length - 1;
-        }
+    } else {
+        // delete letter from guesses
+        let row = document.getElementsByClassName("letter-row")[0]
+        let box = row.children[thisLetter - 1]
+        box.textContent = ""
         
+        // remove letter at active position    
+        currentGuess = currentGuess.substr(0, thisLetter - 1).concat(" ", currentGuess.substr(thisLetter)) 
         
-        // if previous guess if undefined
-        if (currentGuesses[prevClue] == undefined) {
-            var prevGuess = '';
-            
-            currentGuesses.splice(prevClue, 1, prevGuess);
-        } else {
-            var prevGuess = '';
-            
-            for (var i = 1; i <= WORDS[prevClue].length; i++) {
-                if (i < WORDS[prevClue].length) {
-                    // if there is a letter keep it, otherwise add a space
-                    let checkLetter = currentGuesses[prevClue].slice(i-1,i);
-                    if (checkLetter != undefined) {
-                        prevGuess = prevGuess.concat(checkLetter)
-                    } else {
-                        prevGuess = prevGuess.concat(spacer)
-                    }
-                } else if (i = WORDS[prevClue].length) {
-                    // if at end, remove letter
-                    prevGuess = prevGuess.concat(spacer)
-                }
+        // if deleting the first letter, remove the last letter of the previous word
+        if (thisLetter == 1) {
+            var prevClue = curClue - 1;
+            if (prevClue < 0) {
+                prevClue = WORDS.length - 1;
             }
-            
-            currentGuesses.splice(prevClue, 1, prevGuess);
+
+
+            // if previous guess if undefined, add a blank entry
+            if (currentGuesses[prevClue] == undefined) {
+                var prevGuess = '';
+
+                currentGuesses.splice(prevClue, 1, prevGuess);
+            } else { // if there is a guess, delete last letter
+                var trimmedGuess = currentGuesses[prevClue].substring(0, currentGuesses[prevClue].length - 1)
+                currentGuesses.splice(prevClue, 1, trimmedGuess);
+            }
         }
+
+        // if deleting the last letter, delete the first letter of the next word
+        if (thisLetter === WORDS[curClue].length) {
+            var nextClue = curClue + 1;
+            if (nextClue >= NUMBER_OF_WORDS) {
+                nextClue = 0;
+            }
+
+            // if next guess if undefined
+            if (currentGuesses[nextClue] == undefined) {
+                // if undefined, just leave blank - shouldn't ever happen
+                currentGuesses.splice(nextClue, 1, '');
+            } else {
+                // if not blank, cut first letter and add a spacer
+                var nextGuess = spacer.concat(currentGuesses[nextClue].slice(1));
+
+                currentGuesses.splice(nextClue, 1, nextGuess);
+            }
+        }
+           
+
+        // add to the guesses array
+        logGuess()
+
+        // color game board
+        colorBoxandLine()
         
-        // change line color
-        leftLineColor = '#aaaaaa';
-        let leftLine = document.getElementById("game-lines-left");
-        leftLine.style.backgroundColor = leftLineColor;
+        thisLetter -= 1
     }
-    
-    // if deleting the last letter, delete the first letter of the next word
-    if (thisLetter === WORDS[curClue].length) {
-        var nextClue = curClue + 1;
-        if (nextClue >= NUMBER_OF_WORDS) {
-            nextClue = 0;
-        }
-        
-        // if next guess if undefined
-        if (currentGuesses[nextClue] == undefined) {
-            currentGuesses.splice(nextClue, 1, '');
-        } else {
-            var nextGuess = spacer.concat(currentGuesses[nextClue].slice(1));
-            
-            currentGuesses.splice(nextClue, 1, nextGuess);
-        }
-        
-        // change line color
-        rightLineColor = '#aaaaaa';
-        let rightLine = document.getElementById("game-lines-right");
-        rightLine.style.backgroundColor = rightLineColor;
-    }
-    
-    let row = document.getElementsByClassName("letter-row")[0]
-    let box = row.children[thisLetter - 1]
-    box.textContent = ""
-    box.classList.remove("filled-box")
-    
-    // WORK FROM HERE WORKIT
-    thisLetter -= 1
-    
-    // remove letter at active position
-    
-    currentGuess = currentGuess.substr(0, thisLetter).concat(" ", currentGuess.substr(thisLetter + 1))    
-    
-    // add to the guesses array
-    logGuess()
 }
 
 function logGuess () {
@@ -425,7 +491,7 @@ function slideOutClue (curClue, slideDir) {
         } else if (i = 50) {
             setTimeout(()=> {
                 // reset board and line color
-                initBoard(curClue)
+                initBoard()
                 if (slideDir == 'left') {
                     document.getElementById("game-board").style.marginRight = 0;
                     document.getElementById("game-board").style.marginLeft = marginMove;
