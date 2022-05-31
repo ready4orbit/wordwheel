@@ -831,7 +831,9 @@ function allListeners() {
     document.getElementById("share-button").addEventListener("click", (e) => {
         let shareText = shareResults();
         if (navigator.share) {
-            navigator.share(shareText)
+            navigator.share({
+                text: shareText
+            })
         } else {
             // fallback of just copy to clipboard
             navigator.clipboard.writeText(shareText);
