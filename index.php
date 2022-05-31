@@ -14,14 +14,32 @@
 </head>
 <body>
     <div id="you-win">
-        Congrats you won!
+        <div id="you-win-text">
+            Congrats you won!
+        </div>
+        <div>
+            <button id="share-button" class="keyboard-button">Share results</button>
+        </div>
+    </div>
+    <div id="give-hint">
+        <div>Are you sure you want a hint?</div>
+        <div id="hint-controls">
+            <button class="keyboard-button">Yes</button>
+            <button class="keyboard-button">No</button>
+        </div>
     </div>
     <div id="game-container">
         <div id="flex-holder">
             <div id="logo-cont">WordWheel</div>
             <div id="game-board"></div>
             <div id="keyboard-cont">
-                <div id="progress-bar">
+                <div id="tool-bar">
+                    <div id="tool-item"></div>
+                    <div id="progress-bar">
+                    </div>
+                    <div id="tool-item">
+                        <button id="hint-button" class="tool-button">&#9733;</button>
+                    </div>
                 </div>
                 <div class="first-row">
                     <button class="keyboard-button">q</button>

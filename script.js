@@ -34,8 +34,15 @@ let gameOver = false;
 // set some variables used to track the game
 let currentGuess = '';
 let currentGuesses = Array(NUMBER_OF_WORDS);
+let currentHints = Array(NUMBER_OF_WORDS);
 let thisLetter = 0;
 let curClue = 0;
+
+// start the game
+function startGame() {
+    initHints();
+    initBoard();
+}
 
 // function to create the visible word and clue based on a clue #
 function initBoard() {
@@ -96,7 +103,7 @@ function initBoard() {
         let box = document.createElement("div")
         
         // set text size based on the length of the answer word
-        var styleSize = "letter-box"
+        let styleSize = "letter-box"
         box.className = styleSize
         
         if (WORDS[curClue].length <= 6) {
@@ -153,9 +160,24 @@ function initBoard() {
     
     // set progress
     createProgress();
+    
+    // set hint button color if available hints    
+    let availableHints = [];
+    for (let i = 1; i < WORDS[curClue].length - 1; i++) {
+        if (currentHints[curClue][i] != 'h') { // check if it's not an 'h'
+            // add to available hint array
+            availableHints.push(i);
+            i = WORDS[curClue].length;
+        }
+    }
+    
+    // if there is at least one hint available, generate hint
+    if (availableHints.length > 0) {
+        document.getElementById("hint-button").style.color = "#000000";
+    } else {
+        document.getElementById("hint-button").style.color = "#aaaaaa";
+    }
 }
-
-initBoard()
 
 function colorBoxandLine () {
     let row = document.getElementsByClassName("letter-row")[0]
@@ -165,69 +187,73 @@ function colorBoxandLine () {
         // read box contents
         let box = row.children[i]
         
-        
-        // if current guess is the correct word, set to green
-        if (currentGuess == WORDS[curClue]) {
-            box.classList.add("correct-box")
-            setLineColor('left', correctLine)
-            setLineColor('right', correctLine)
-        } else { // if not, remove green
-            box.classList.remove("correct-box")
-            let boxContents = box.textContent
-            
-            // if there is a guess letter, figure out how to color it
-            if (boxContents != '' && boxContents != ' ' && boxContents != undefined) {
-                box.classList.add("filled-box")
+        // if it's a hint letter, make it hint colored
+        if (currentHints[curClue][i] == 'h') {
+            box.classList.add("hint-box")
+        } else {
+            // if current guess is the correct word, set to green
+            if (currentGuess == WORDS[curClue]) {
+                box.classList.add("correct-box")
+                setLineColor('left', correctLine)
+                setLineColor('right', correctLine)
+            } else { // if not, remove green
+                box.classList.remove("correct-box")
+                let boxContents = box.textContent
 
-                // for first letter, check if previous word is correct
-                if (i == 0) {
-                    // create previous guess #
-                    var prevClue = curClue - 1;
-                    if (prevClue < 0) {
-                        prevClue = WORDS.length - 1;
-                    }
-                    
-                    // if previous word correct, set green
-                    if (currentGuesses[prevClue] == WORDS[prevClue]) {
-                        // set box and line green
-                        box.classList.add("correct-box")
-                        setLineColor('left', correctLine)
-                    } else {
-                        // if not, set line black
-                        setLineColor('left', activeLine)
-                    }
-                }
+                // if there is a guess letter, figure out how to color it
+                if (boxContents != '' && boxContents != ' ' && boxContents != undefined) {
+                    box.classList.add("filled-box")
 
-                // if it's the last letter, check if next word is correct
-                if (i == row.children.length - 1) {
-                    // create next guess #
-                    var nextClue = curClue + 1;
-                    if (nextClue >= NUMBER_OF_WORDS) {
-                        nextClue = 0;
+                    // for first letter, check if previous word is correct
+                    if (i == 0) {
+                        // create previous guess #
+                        let prevClue = curClue - 1;
+                        if (prevClue < 0) {
+                            prevClue = WORDS.length - 1;
+                        }
+
+                        // if previous word correct, set green
+                        if (currentGuesses[prevClue] == WORDS[prevClue]) {
+                            // set box and line green
+                            box.classList.add("correct-box")
+                            setLineColor('left', correctLine)
+                        } else {
+                            // if not, set line black
+                            setLineColor('left', activeLine)
+                        }
                     }
-                    
-                    // if next word correct, set green
-                    if (currentGuesses[nextClue] == WORDS[nextClue]) {
-                        // set box and line green
-                        box.classList.add("correct-box")
-                        setLineColor('right', correctLine)
-                    } else {
-                        // if not, set line black
-                        setLineColor('right', activeLine)
-                    }                    
-                }
-            } else {
-                // if the box IS blank, set line and box color
-                box.classList.remove("filled-box")
-                
-                // if first box, change left line color
-                if (i == 0) { 
-                    setLineColor('left', inactiveLine) 
-                }
-                
-                // if last box, change right line color
-                if (i == row.children.length - 1) {
-                    setLineColor('right', inactiveLine)                  
+
+                    // if it's the last letter, check if next word is correct
+                    if (i == row.children.length - 1) {
+                        // create next guess #
+                        let nextClue = curClue + 1;
+                        if (nextClue >= NUMBER_OF_WORDS) {
+                            nextClue = 0;
+                        }
+
+                        // if next word correct, set green
+                        if (currentGuesses[nextClue] == WORDS[nextClue]) {
+                            // set box and line green
+                            box.classList.add("correct-box")
+                            setLineColor('right', correctLine)
+                        } else {
+                            // if not, set line black
+                            setLineColor('right', activeLine)
+                        }                    
+                    }
+                } else {
+                    // if the box IS blank, set line and box color
+                    box.classList.remove("filled-box")
+
+                    // if first box, change left line color
+                    if (i == 0) { 
+                        setLineColor('left', inactiveLine) 
+                    }
+
+                    // if last box, change right line color
+                    if (i == row.children.length - 1) {
+                        setLineColor('right', inactiveLine)                  
+                    }
                 }
             }
         }
@@ -279,7 +305,7 @@ function createProgress() {
 }
 
 function insertLetter (pressedKey) {
-    var spacer = ' ';
+    let spacer = ' ';
     pressedKey = pressedKey.toLowerCase()
     
     // if already at the end of the word, skip everything and go to next word
@@ -292,22 +318,22 @@ function insertLetter (pressedKey) {
         box.textContent = pressedKey
         
         // Add the letter to existing guess
-        var curGuessStr = currentGuess.substr(0, thisLetter).concat(box.textContent,currentGuess.substr(thisLetter + 1))
+        let curGuessStr = currentGuess.substr(0, thisLetter).concat(box.textContent,currentGuess.substr(thisLetter + 1))
         currentGuess = curGuessStr;
         currentGuesses.splice(curClue, 1, currentGuess);
         
         // if this is the first letter, add to end of previous word
         if (thisLetter === 0) {
-            var prevClue = curClue - 1;
+            let prevClue = curClue - 1;
             if (prevClue < 0) {
                 prevClue = WORDS.length - 1;
             }
 
             // if previous guess if undefined
             if (currentGuesses[prevClue] == undefined) {
-                var prevGuess = '';
+                let prevGuess = '';
 
-                for (var i = 1; i <= WORDS[prevClue].length; i++) {
+                for (let i = 1; i <= WORDS[prevClue].length; i++) {
                     if (i < WORDS[prevClue].length) {
                         prevGuess = prevGuess.concat(spacer);
                     } else if (i = WORDS[prevClue].length) {
@@ -317,12 +343,12 @@ function insertLetter (pressedKey) {
 
                 currentGuesses.splice(prevClue, 1, prevGuess);
             } else {
-                var prevGuess = '';
+                let prevGuess = '';
 
-                for (var i = 1; i <= WORDS[prevClue].length; i++) {
+                for (let i = 1; i <= WORDS[prevClue].length; i++) {
                     if (i < WORDS[prevClue].length) {
-                        var a = i - 1;
-                        var b = i;
+                        let a = i - 1;
+                        let b = i;
                         // if there is a letter keep it, otherwise add a space
                         let checkLetter = String(currentGuesses[prevClue]);
                         checkLetter = checkLetter.slice(a,b);
@@ -344,7 +370,7 @@ function insertLetter (pressedKey) {
         // if this is the last letter, add to the beginning of the next word
         if (thisLetter == WORDS[curClue].length - 1) {
             // identify the next word
-            var nextClue = curClue + 1;
+            let nextClue = curClue + 1;
             if (nextClue >= NUMBER_OF_WORDS) {
                 nextClue = 0;
             }
@@ -353,7 +379,7 @@ function insertLetter (pressedKey) {
             if (currentGuesses[nextClue] == undefined) {
                 currentGuesses.splice(nextClue, 1, pressedKey);
             } else {
-                var nextGuess = pressedKey.concat(currentGuesses[nextClue].substr(1));
+                let nextGuess = pressedKey.concat(currentGuesses[nextClue].substr(1));
 
                 currentGuesses.splice(nextClue, 1, nextGuess);
             }
@@ -368,10 +394,16 @@ function insertLetter (pressedKey) {
         // color game board
         colorBoxandLine()
         
-        // if correct word, go to next clue
+        // go to next letter, skip any hint letters
         thisLetter += 1
+        let hintGuide = currentHints[curClue]
+        while (hintGuide[thisLetter] == 'h') { // skip hints
+            thisLetter += 1
+        }
+        
+        // if correct word, go to next clue
         if (currentGuess == WORDS[curClue]) {
-            var delay = 250
+            let delay = 250
             setTimeout(()=> {
                 // after short delay, go to next word
                 nextWord()
@@ -381,13 +413,19 @@ function insertLetter (pressedKey) {
 }
 
 function deleteLetter () {
-    var spacer = ' ';
+    let spacer = ' ';
     
     // if we're already at the beginning, go to previous word
     if (thisLetter === 0) {
         prevWord()
         return;
     } else {
+        // if it's a hint letter, go back one more
+        let hintGuide = currentHints[curClue]
+        while (hintGuide[thisLetter - 1] == 'h') { // skip hints
+            thisLetter -= 1
+        }
+        
         // delete letter from guesses
         let row = document.getElementsByClassName("letter-row")[0]
         let box = row.children[thisLetter - 1]
@@ -398,7 +436,7 @@ function deleteLetter () {
         
         // if deleting the first letter, remove the last letter of the previous word
         if (thisLetter == 1) {
-            var prevClue = curClue - 1;
+            let prevClue = curClue - 1;
             if (prevClue < 0) {
                 prevClue = WORDS.length - 1;
             }
@@ -406,18 +444,18 @@ function deleteLetter () {
 
             // if previous guess if undefined, add a blank entry
             if (currentGuesses[prevClue] == undefined) {
-                var prevGuess = '';
+                let prevGuess = '';
 
                 currentGuesses.splice(prevClue, 1, prevGuess);
             } else { // if there is a guess, delete last letter
-                var trimmedGuess = currentGuesses[prevClue].substring(0, currentGuesses[prevClue].length - 1)
+                let trimmedGuess = currentGuesses[prevClue].substring(0, currentGuesses[prevClue].length - 1)
                 currentGuesses.splice(prevClue, 1, trimmedGuess);
             }
         }
 
         // if deleting the last letter, delete the first letter of the next word
         if (thisLetter === WORDS[curClue].length) {
-            var nextClue = curClue + 1;
+            let nextClue = curClue + 1;
             if (nextClue >= NUMBER_OF_WORDS) {
                 nextClue = 0;
             }
@@ -428,7 +466,7 @@ function deleteLetter () {
                 currentGuesses.splice(nextClue, 1, '');
             } else {
                 // if not blank, cut first letter and add a spacer
-                var nextGuess = spacer.concat(currentGuesses[nextClue].slice(1));
+                let nextGuess = spacer.concat(currentGuesses[nextClue].slice(1));
 
                 currentGuesses.splice(nextClue, 1, nextGuess);
             }
@@ -441,6 +479,7 @@ function deleteLetter () {
         // color game board
         colorBoxandLine()
         
+        // go to previous letter
         thisLetter -= 1
     }
 }
@@ -561,15 +600,88 @@ function slideInClue(slideDir) {
     }
 }
 
+function initHints () { // create the array to contain hint guides
+    for (let i = 0; i < WORDS.length; i++) {
+        // iterate through each word, create a string of that word length of 'x' for no hint
+        
+        let hintHolder = '';
+        for (let j = 0; j < WORDS[i].length; j++) {
+            hintHolder = hintHolder.concat('x'); // fill with empty code 'x'
+        }
+        
+        currentHints[i] = hintHolder;
+    }    
+}
+
+function showHint () {
+    let availableHints = [];
+    
+    // iterate through hint guide from second letter to second to last
+    for (let i = 1; i < WORDS[curClue].length - 1; i++) {
+        if (currentHints[curClue][i] != 'h') { // check if it's not an 'h'
+            // add to available hint array
+            availableHints.push(i);
+        }
+    }
+    
+    // if there is at least one hint available, generate hint
+    if (availableHints.length > 0) {
+        document.getElementById("give-hint").style.display = "block";
+    }
+}
+
+function generateHint() {    
+    let availableHints = [];
+    
+    // iterate through hint guide from second letter to second to last
+    for (let i = 1; i < WORDS[curClue].length - 1; i++) {
+        if (currentHints[curClue][i] != 'h') { // check if it's not an 'h'
+            // add to available hint array
+            availableHints.push(i);
+        }
+    }
+    
+    // if there is at least one hint available, generate hint
+    if (availableHints.length > 0) {
+        let randHint = availableHints[Math.floor(Math.random()*availableHints.length)];
+        
+        let hintPosition = randHint;
+        let hintLetter = WORDS[curClue][hintPosition];
+
+        // iterate through each letter of the word, to create a placeholder word with spaces
+        let updatedGuess = '';
+
+        for (let i = 0; i < WORDS[curClue].length; i++) {        
+            if (currentGuess[i] != undefined) {
+                updatedGuess = updatedGuess.concat(currentGuess[i]);
+            } else { // add a space
+                updatedGuess = updatedGuess.concat(' ');
+            }
+        }
+
+        // add hint letter to guess array
+        updatedGuess = updatedGuess.substr(0, hintPosition).concat(hintLetter,updatedGuess.substr(hintPosition + 1))
+        currentGuess = updatedGuess;
+        currentGuesses.splice(curClue, 1, currentGuess);
+
+        // update hint guide to show hint given
+        let currentGuide = currentHints[curClue];
+        let updatedGuide = currentGuide.substr(0, hintPosition).concat('h',currentGuide.substr(hintPosition + 1))
+        currentHints.splice(curClue, 1, updatedGuide);
+        
+        initBoard();
+    }
+}
+
 function checkGuesses () {
     
     // does the current guess match the current word
     if (currentGuess == WORDS[curClue]) {
         //check all words        
-        var z = 0;
+        let z = 0;
         
         // do all guesses match all words
-        for (var i = 0; i < WORDS.length; i++) {
+        for (let i = 0; i < WORDS.length; i++) {
             if (currentGuesses[i] === WORDS[i]) {
                 z++;
             }
@@ -587,19 +699,54 @@ function youWin() {
     document.getElementById("you-win").style.display = "block";
 }
 
+function shareResults() {
+    // create the text to share
+    let shareText = 'I won Word Wheel! \n';
+    // iterate through words
+    for (let i = 0; i < WORDS.length; i++) {
+        
+        // iterate through hint guide and add the correct color box
+        for (let j = 0; j < WORDS[i].length; j++) {
+            if (currentHints[i][j] == 'h') { // check if it's not an 'h'
+                // if it's a hint, add blue box
+                shareText = shareText.concat('🟦');
+            } else {
+                // if not, add green box
+                shareText = shareText.concat('🟩');
+            }
+        }   
+        // add a line break
+        shareText = shareText.concat('\n');
+    }
+    
+    shareText = shareText.concat('\nTry it yourself: word-wheel.herokuapp.com');
+    
+    if (navigator.share) {
+        navigator.share(shareText)
+    } else {
+        // fallback of just copy to clipboard
+        navigator.clipboard.writeText(shareText);
+        
+        document.getElementById('you-win-text').textContent = 'Copied to clipboard';
+        
+        
+    }
+}
+
 document.addEventListener("keyup", (e) => {
+    let pressedKey = String(e.key)
+
+    if (pressedKey === "ArrowLeft") {
+        prevWord()
+        return
+    }
+
+    if (pressedKey === "ArrowRight") {
+        nextWord()
+        return
+    }
+    
     if (gameOver === false) {
-        let pressedKey = String(e.key)
-
-        if (pressedKey === "ArrowLeft") {
-            prevWord()
-            return
-        }
-
-        if (pressedKey === "ArrowRight") {
-            nextWord()
-            return
-        }
 
         if (pressedKey === "Backspace") {
             deleteLetter()
@@ -608,6 +755,11 @@ document.addEventListener("keyup", (e) => {
 
         if (pressedKey === "Enter") {
             nextWord()
+            return
+        }
+        
+        if (pressedKey === "Hint") {
+            showHint()
             return
         }
 
@@ -623,11 +775,11 @@ document.addEventListener("keyup", (e) => {
 document.getElementById("keyboard-cont").addEventListener("click", (e) => {
     const target = e.target
     
-    if (!target.classList.contains("keyboard-button")) {
+    if (target.tagName != 'BUTTON') {
         return
     }
     let key = target.textContent
-
+    
     if (key === "Del") {
         key = "Backspace"
     }
@@ -636,12 +788,8 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
         key = "Return"
     }
     
-    if (key === "<") {
-        key = "ArrowLeft"
-    }
-    
-    if (key === ">") {
-        key = "ArrowRight"
+    if (key === "\u2605") {
+        key = "Hint"
     }
 
     document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}))
@@ -663,3 +811,37 @@ document.getElementById("game-board").addEventListener('touchend', e => {
   touchendX = e.changedTouches[0].screenX
   handleGesture()
 })
+
+// set hint button action on button push
+document.getElementById("hint-controls").addEventListener("click", (e) => {
+    const target = e.target
+
+    if (target.tagName != 'BUTTON') {
+        return
+    }
+    let key = target.textContent
+
+    if (key == "Yes") {
+        // show hint
+        generateHint();
+        document.getElementById("give-hint").style.display = "none";
+    }
+
+    if (key == "No") {
+        // hide box
+        document.getElementById("give-hint").style.display = "none";
+    }
+})
+
+// set share action on share button push
+document.getElementById("share-button").addEventListener("click", (e) => {
+    const target = e.target
+
+    if (target.tagName != 'BUTTON') {
+        return
+    }
+    
+    shareResults();
+})
+
+startGame()
