@@ -65,7 +65,7 @@
                     <button class="keyboard-button">l</button>
                 </div>
                 <div class="third-row">
-                    <button class="keyboard-button" style="background: #8b8b8b">Del</button>
+                    <button class="keyboard-button keyboard-tool">Ent</button>
                     <button class="keyboard-button">z</button>
                     <button class="keyboard-button">x</button>
                     <button class="keyboard-button">c</button>
@@ -73,7 +73,7 @@
                     <button class="keyboard-button">b</button>
                     <button class="keyboard-button">n</button>
                     <button class="keyboard-button">m</button>
-                    <button class="keyboard-button keyboard-tool">Ent</button>
+                    <button class="keyboard-button" style="background: #8b8b8b">Del</button>
                 </div>
             </div>
         </div>
