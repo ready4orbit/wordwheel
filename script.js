@@ -42,6 +42,7 @@ let curClue = 0;
 function startGame() {
     initHints();
     initBoard();
+    allListeners();
 }
 
 // function to create the visible word and clue based on a clue #
@@ -721,127 +722,123 @@ function shareResults() {
     
     shareText = shareText.concat('\nTry it yourself: word-wheel.herokuapp.com');
     
-    if (navigator.share) {
-        navigator.share(shareText)
-    } else {
-        // fallback of just copy to clipboard
-        navigator.clipboard.writeText(shareText);
-        
-        document.getElementById('you-win-text').textContent = 'Copied to clipboard';
-        
-        
-    }
+    return shareText;
 }
 
-document.addEventListener("keyup", (e) => {
-    let pressedKey = String(e.key)
+function allListeners() {
+    document.addEventListener("keyup", (e) => {
+        let pressedKey = String(e.key)
 
-    if (pressedKey === "ArrowLeft") {
-        prevWord()
-        return
-    }
-
-    if (pressedKey === "ArrowRight") {
-        nextWord()
-        return
-    }
-    
-    if (gameOver === false) {
-
-        if (pressedKey === "Backspace") {
-            deleteLetter()
+        if (pressedKey === "ArrowLeft") {
+            prevWord()
             return
         }
 
-        if (pressedKey === "Enter") {
+        if (pressedKey === "ArrowRight") {
             nextWord()
             return
         }
-        
-        if (pressedKey === "Hint") {
-            showHint()
+
+        if (gameOver === false) {
+
+            if (pressedKey === "Backspace") {
+                deleteLetter()
+                return
+            }
+
+            if (pressedKey === "Enter") {
+                nextWord()
+                return
+            }
+
+            if (pressedKey === "Hint") {
+                showHint()
+                return
+            }
+
+            let found = pressedKey.match(/[a-z]/gi)
+            if (!found || found.length > 1) {
+                return
+            } else {
+                insertLetter(pressedKey)
+            }
+        }
+    })
+
+    document.getElementById("keyboard-cont").addEventListener("click", (e) => {
+        const target = e.target
+
+        if (target.tagName != 'BUTTON') {
             return
         }
+        let key = target.textContent
 
-        let found = pressedKey.match(/[a-z]/gi)
-        if (!found || found.length > 1) {
+        if (key === "Del") {
+            key = "Backspace"
+        }
+
+        if (key === "Ent") {
+            key = "Return"
+        }
+
+        if (key === "\u2605") {
+            key = "Hint"
+        }
+
+        document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}))
+    })
+    
+    // scroll action listeners
+    let touchstartX = 0
+    let touchendX = 0
+
+    function handleGesture() {
+      if (touchendX < touchstartX) nextWord()
+      if (touchendX > touchstartX) prevWord()
+    }
+
+    document.getElementById("game-board").addEventListener('touchstart', e => {
+      touchstartX = e.changedTouches[0].screenX
+    })
+
+    document.getElementById("game-board").addEventListener('touchend', e => {
+      touchendX = e.changedTouches[0].screenX
+      handleGesture()
+    })
+
+    // set hint button action on button push
+    document.getElementById("hint-controls").addEventListener("click", (e) => {
+        const target = e.target
+
+        if (target.tagName != 'BUTTON') {
             return
+        }
+        let key = target.textContent
+
+        if (key == "Yes") {
+            // show hint
+            generateHint();
+            document.getElementById("give-hint").style.display = "none";
+        }
+
+        if (key == "No") {
+            // hide box
+            document.getElementById("give-hint").style.display = "none";
+        }
+    })
+
+    // set share action on share button push
+    document.getElementById("share-button").addEventListener("click", (e) => {
+        let shareText = shareResults();
+        if (navigator.share) {
+            navigator.share(shareText)
         } else {
-            insertLetter(pressedKey)
+            // fallback of just copy to clipboard
+            navigator.clipboard.writeText(shareText);
+
+            document.getElementById('you-win-text').textContent = 'Copied to clipboard';
         }
-    }
-})
-
-document.getElementById("keyboard-cont").addEventListener("click", (e) => {
-    const target = e.target
-    
-    if (target.tagName != 'BUTTON') {
-        return
-    }
-    let key = target.textContent
-    
-    if (key === "Del") {
-        key = "Backspace"
-    }
-    
-    if (key === "Ent") {
-        key = "Return"
-    }
-    
-    if (key === "\u2605") {
-        key = "Hint"
-    }
-
-    document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}))
-})
-
-let touchstartX = 0
-let touchendX = 0
-
-function handleGesture() {
-  if (touchendX < touchstartX) nextWord()
-  if (touchendX > touchstartX) prevWord()
+    })
 }
-
-document.getElementById("game-board").addEventListener('touchstart', e => {
-  touchstartX = e.changedTouches[0].screenX
-})
-
-document.getElementById("game-board").addEventListener('touchend', e => {
-  touchendX = e.changedTouches[0].screenX
-  handleGesture()
-})
-
-// set hint button action on button push
-document.getElementById("hint-controls").addEventListener("click", (e) => {
-    const target = e.target
-
-    if (target.tagName != 'BUTTON') {
-        return
-    }
-    let key = target.textContent
-
-    if (key == "Yes") {
-        // show hint
-        generateHint();
-        document.getElementById("give-hint").style.display = "none";
-    }
-
-    if (key == "No") {
-        // hide box
-        document.getElementById("give-hint").style.display = "none";
-    }
-})
-
-// set share action on share button push
-document.getElementById("share-button").addEventListener("click", (e) => {
-    const target = e.target
-
-    if (target.tagName != 'BUTTON') {
-        return
-    }
-    
-    shareResults();
-})
 
 startGame()
