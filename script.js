@@ -12,17 +12,12 @@ python -m SimpleHTTPServer
 You should then be able to access at http://localhost:8000
 
 References: 
-https://workshops.hackclub.com/spinning_wheel/
 https://www.freecodecamp.org/news/build-a-wordle-clone-in-javascript/
 **/
 
-// Load game words and clues
-import { WORDS } from "./wheel.js";
-import { CLUES } from "./wheel.js";
-
 // set some variables
-const NUMBER_OF_WORDS = WORDS.length;
-let animDelay = 6; // was 6
+let NUMBER_OF_WORDS = 6; // default 6
+let animDelay = 6;
 let inactiveLine = '#aaaaaa'
 let activeLine = '#000000'
 let correctLine = '#63cd66'
@@ -30,6 +25,7 @@ let correctBG = '#c4ebc6'
 let leftLineColor = inactiveLine;
 let rightLineColor = inactiveLine;
 let gameOver = false;
+let thisDate = new Date();
 
 // set some variables used to track the game
 let currentGuess = '';
@@ -39,15 +35,76 @@ let thisLetter = 0;
 let curClue = 0;
 
 // start the game
+function gameLoader() {
+    // function to see if javascript file exists
+    function checkFileExist(urlToFile) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('HEAD', urlToFile, false);
+        xhr.send();
+
+        if (xhr.status == "404") {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    // starting with today's date, iterate back until you find a game file that exists and load it
+    let gameLoaded = false;
+    for (let i = 0; gameLoaded == false && i < 10; i++) {
+        var dateOffset = (24*60*60*1000) * i; //i days back
+        let newDate = thisDate
+        newDate.setTime(thisDate.getTime() - dateOffset);
+        
+        // create file name
+        let fileName = 'games/' + readableDate(newDate) + '.js';
+        
+        // See if the file exists
+        if(checkFileExist(fileName)){
+            // if so, load the file and set the date
+            thisDate = newDate; 
+            let gameScript = document.createElement('script');
+            gameScript.onload = function () {
+                startGame();
+            };
+            gameScript.src = fileName;
+
+            document.head.appendChild(gameScript);
+            
+            gameLoaded = true;
+        }
+    }
+}
+
 function startGame() {
-    initHints();
-    initBoard();
+    // set some variables
+    NUMBER_OF_WORDS = WORDS.length;
+    
+    loadCookie();
+    // initHints();
+    // initBoard();
     allListeners();
 }
 
-// function to create the visible word and clue based on a clue #
-function initBoard() {
+function initHints () { 
+    // see if cookie with thisDate, if so set guess and hint arrays
+    // if not cookie, start clean game
     
+    // create the array to contain hint guides
+    for (let i = 0; i < WORDS.length; i++) {
+        // iterate through each word, create a string of that word length of 'x' for no hint
+        
+        let hintHolder = '';
+        for (let j = 0; j < WORDS[i].length; j++) {
+            hintHolder = hintHolder.concat('x'); // fill with empty code 'x'
+        }
+        
+        currentHints[i] = hintHolder;
+    }    
+}
+
+function initBoard() {
+    // function to create the visible word and clue based on a clue #
     // create a human readable version of the number
     let readableClueNum = curClue+1;
     
@@ -485,15 +542,104 @@ function deleteLetter () {
     }
 }
 
-function logGuess () {
-    //console.log(curClue)
-    
+function logGuess () {    
     // create string for guesses array
     currentGuesses.splice(curClue, 1, currentGuess)
+    
+    // update cookies
+    setCookie();
     
     //console.log(currentGuess)
     //console.log('currentGuess:'+currentGuess)
     //console.log(currentGuesses)
+}
+
+// function to make a YYYY-MM-DD date based on a date object
+function readableDate(varDate) {
+    let dd = String(varDate.getDate()).padStart(2, '0');
+    let mm = String(varDate.getMonth() + 1).padStart(2, '0'); //January is 0!
+    let yyyy = varDate.getFullYear();
+
+    let readDate = yyyy + '-' + mm + '-' + dd;
+    return readDate;
+}
+
+function setCookie () {
+    // cookie structure: date, guesses, hints, expires
+    var cookieObject = {};
+    cookieObject.date = readableDate(thisDate);
+    cookieObject.guesses = JSON.stringify(currentGuesses);
+    cookieObject.hints = JSON.stringify(currentHints);
+    let jsonObject = JSON.stringify(cookieObject);
+    
+    // create expiration date 10 years in the future
+    const futureDate = new Date();
+    futureDate.setTime(futureDate.getTime() + (10*365*24*60*60*1000));    
+    let cookieExpiry = 'expires='.concat(futureDate.toUTCString())
+    
+    // add it all together
+    let fullCookie = "data=".concat(jsonObject,';', cookieExpiry, ';', 'SameSite=Strict', ';')
+    
+    // set/update cookie
+    document.cookie = fullCookie
+}
+
+function loadCookie () {
+    function getCookieValue(name) {
+        const nameString = name + "="
+
+        const value = document.cookie.split(";").filter(item => {
+            return item.includes(nameString)
+        })
+
+        if (value.length) {
+            return value[0].substring(nameString.length, value[0].length)
+        } else {
+            return ""
+        }
+    }
+    
+    let previouslyPlayed = false;
+    let data = getCookieValue("data");
+    if (data != '') { // if there is a cookie
+        var cookieObj = JSON.parse(getCookieValue("data"));
+        
+        // load game date
+        let gameDate = cookieObj.date;
+        
+        if (gameDate == readableDate(thisDate)) {
+            // if there are guesses for this game date
+            previouslyPlayed = true
+            
+            // load guesses array
+            let cookieGuesses = Array.from(JSON.parse(cookieObj.guesses));
+
+            // load hint array
+            let cookieHints = Array.from(JSON.parse(cookieObj.hints));
+
+            currentGuesses = cookieGuesses;
+            currentHints = cookieHints;
+        }
+    }
+    
+    if (!previouslyPlayed) {
+        // if you haven't previous played, fresh guess and hint arrays
+        currentGuesses = Array(NUMBER_OF_WORDS);
+        currentHints = Array(NUMBER_OF_WORDS);
+        
+        // create the array to contain hint guides
+        for (let i = 0; i < WORDS.length; i++) {
+            // iterate through each word, create a string of that word length of 'x' for no hint
+
+            let hintHolder = '';
+            for (let j = 0; j < WORDS[i].length; j++) {
+                hintHolder = hintHolder.concat('x'); // fill with empty code 'x'
+            }
+
+            currentHints[i] = hintHolder;
+        } 
+    }
+    initBoard();
 }
 
 function nextWord () {
@@ -601,19 +747,6 @@ function slideInClue(slideDir) {
     }
 }
 
-function initHints () { // create the array to contain hint guides
-    for (let i = 0; i < WORDS.length; i++) {
-        // iterate through each word, create a string of that word length of 'x' for no hint
-        
-        let hintHolder = '';
-        for (let j = 0; j < WORDS[i].length; j++) {
-            hintHolder = hintHolder.concat('x'); // fill with empty code 'x'
-        }
-        
-        currentHints[i] = hintHolder;
-    }    
-}
-
 function showHint () {
     let availableHints = [];
     
@@ -669,6 +802,9 @@ function generateHint() {
         let currentGuide = currentHints[curClue];
         let updatedGuide = currentGuide.substr(0, hintPosition).concat('h',currentGuide.substr(hintPosition + 1))
         currentHints.splice(curClue, 1, updatedGuide);
+        
+        // update cookies
+        setCookie();
         
         initBoard();
     }
@@ -843,4 +979,4 @@ function allListeners() {
     })
 }
 
-startGame()
+gameLoader()

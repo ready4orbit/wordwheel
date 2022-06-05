@@ -192,7 +192,7 @@ body {
     text-align: center;
     margin: 2rem;
     font-size: 1.5rem;
-    
+    display: block;
 }
 
 button {
@@ -208,6 +208,7 @@ button {
     justify-content: space-between;
     vertical-align: middle;
     width: 100%;
+    margin-bottom: 0.5rem;
 }
 
 #tool-item {
