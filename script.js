@@ -976,9 +976,10 @@ function allListeners() {
             navigator.share({
                 text: shareText
             })
-            .then(() => console.log('Share was successful.'))
-            .catch((error) => console.log('Sharing failed', error));
+            .then(() => alert('Share was successful.'))
+            .catch((error) => alert('Sharing failed', error));
         } else {
+            alert('fallback')
             // fallback of just copy to clipboard
             navigator.clipboard.writeText(shareText);
 
