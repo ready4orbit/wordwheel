@@ -839,8 +839,11 @@ function youWin() {
 }
 
 function shareResults() {
+    // create a "Jul 2, 2021" date
+    let shareableDate = thisDate.toLocaleDateString('en-us', { year:"numeric", month:"short", day:"numeric"});
+    
     // create the text to share
-    let shareText = 'I won Word Wheel! \n';
+    let shareText = 'I won Word Wheel!\n'.concat(shareableDate,'\r');
     // iterate through words
     for (let i = 0; i < WORDS.length; i++) {
         
