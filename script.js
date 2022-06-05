@@ -858,7 +858,6 @@ function shareResults() {
         // add a line break
         shareText = shareText.concat('\n');
     }
-    console.log(shareText);
     
     shareText = shareText.concat('\nTry it yourself: word-wheel.herokuapp.com');
     
@@ -970,6 +969,8 @@ function allListeners() {
     // set share action on share button push
     document.getElementById("share-button").addEventListener("click", (e) => {   
         let shareText = shareResults();
+        console.log('shareText-')
+        console.log(shareText)
         
         if (navigator.canShare) {
             navigator.share({
