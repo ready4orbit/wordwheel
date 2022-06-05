@@ -235,6 +235,8 @@ function initBoard() {
     } else {
         document.getElementById("hint-button").style.color = "#aaaaaa";
     }
+    
+    checkGuesses ()
 }
 
 function colorBoxandLine () {
@@ -837,6 +839,7 @@ function youWin() {
 }
 
 function shareResults() {
+    console.log('shareResults');
     // create the text to share
     let shareText = 'I won Word Wheel! \n';
     // iterate through words
@@ -855,6 +858,7 @@ function shareResults() {
         // add a line break
         shareText = shareText.concat('\n');
     }
+    console.log(shareText);
     
     shareText = shareText.concat('\nTry it yourself: word-wheel.herokuapp.com');
     

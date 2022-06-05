@@ -65,7 +65,7 @@
                     <button class="keyboard-button">l</button>
                 </div>
                 <div class="third-row">
-                    <button class="keyboard-button keyboard-tool">Ent</button>
+                    <button class="keyboard-button">Ent</button>
                     <button class="keyboard-button">z</button>
                     <button class="keyboard-button">x</button>
                     <button class="keyboard-button">c</button>
