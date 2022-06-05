@@ -858,7 +858,7 @@ function shareResults() {
         shareText = shareText.concat('\n');
     }
     
-    shareText = shareText.concat('\nCan you do better?\s');
+    shareText = shareText.concat('\nCan you do better?\n');
     
     return shareText;
 }
