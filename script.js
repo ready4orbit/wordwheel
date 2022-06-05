@@ -972,9 +972,9 @@ function allListeners() {
         console.log('shareText-')
         console.log(shareText)
         
-        alert(navigator.canShare)
+        alert(navigator.canShare())
         
-        if (navigator.canShare {
+        if (navigator.canShare) {
             navigator.share({
                 text: shareText
             })
