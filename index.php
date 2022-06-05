@@ -7,10 +7,6 @@
     <title>WordWheel</title>
     
     <link rel="stylesheet" href="style.css">
-    
-    <link
-    rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    
 </head>
 <body>
     <div id="you-win">
@@ -30,7 +26,10 @@
     </div>
     <div id="game-container">
         <div id="flex-holder">
-            <div id="logo-cont">WordWheel</div>
+            <div id="logo-cont">
+                <div id="game-logo">WordWheel</div>
+                <div id="game-date"></div>
+            </div>
             <div id="game-board"></div>
             <div id="keyboard-cont">
                 <div id="tool-bar">
