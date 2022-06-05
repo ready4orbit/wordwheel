@@ -970,6 +970,21 @@ function allListeners() {
     // set share action on share button push
     document.getElementById("share-button").addEventListener("click", (e) => {   
         let shareText = shareResults();
+        
+        if (navigator.canShare) {
+            navigator.share({
+                text: shareText
+            })
+            .then(() => console.log('Share was successful.'))
+            .catch((error) => console.log('Sharing failed', error));
+        } else {
+            // fallback of just copy to clipboard
+            navigator.clipboard.writeText(shareText);
+
+            document.getElementById('you-win-text').textContent = 'Copied to clipboard';
+        }
+        
+        /*
         if (navigator.share) {
             navigator.share({
                 text: shareText
@@ -980,6 +995,7 @@ function allListeners() {
 
             document.getElementById('you-win-text').textContent = 'Copied to clipboard';
         }
+        */
     })
 }
 
