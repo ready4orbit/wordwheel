@@ -976,7 +976,9 @@ function allListeners() {
         
         if (navigator.canShare) {
             navigator.share({
-                text: shareText
+                title: 'WordWheel',
+                text: shareText,
+                url: 'https://word-wheel.herokuapp.com'
             })
             .then(() => alert('Share was successful.'))
             .catch((error) => alert('Sharing failed', error));
