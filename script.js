@@ -968,7 +968,7 @@ function allListeners() {
     })
 
     // set share action on share button push
-    document.getElementById("share-button").addEventListener("click", (e) => {
+    document.getElementById("share-button").addEventListener("click", (e) => {   
         let shareText = shareResults();
         if (navigator.share) {
             navigator.share({
