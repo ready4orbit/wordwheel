@@ -859,7 +859,7 @@ function shareResults() {
         shareText = shareText.concat('\n');
     }
     
-    shareText = shareText.concat('\nTry it yourself: word-wheel.herokuapp.com');
+    shareText = shareText.concat('\nTry it yourself: https://word-wheel.herokuapp.com');
     
     return shareText;
 }
@@ -972,9 +972,9 @@ function allListeners() {
         console.log('shareText-')
         console.log(shareText)
         
-        alert(navigator.canShare)
+        alert(navigator.canShare())
         
-        if (navigator.canShare) {
+        if (navigator.canShare {
             navigator.share({
                 text: shareText
             })
