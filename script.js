@@ -104,6 +104,13 @@ function initHints () {
 }
 
 function initBoard() {
+    // create a "Jul 2, 2021" date
+    let displayDate = thisDate.toLocaleDateString('en-us', { weekday:"short", year:"numeric", month:"short", day:"numeric"}).toUpperCase().substring(0, 3).concat(thisDate.toLocaleDateString('en-us', { weekday:"short", year:"numeric", month:"short", day:"numeric"}).toUpperCase().substring(4));
+    
+    // write date
+    document.getElementById('game-date').innerHTML = displayDate;
+
+    
     // function to create the visible word and clue based on a clue #
     // create a human readable version of the number
     let readableClueNum = curClue+1;

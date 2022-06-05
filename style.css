@@ -82,13 +82,21 @@ body {
     order: 1;
     
     text-align: center;
-    font-size: 2.3rem;
     margin: 2rem;
+}
+
+#game-logo {
+    font-size: 2.3rem;
     font-weight: 700;
 }
 
+#game-date {
+    font-size: 1rem;
+    letter-spacing: .2rem;
+}
+
 #game-board {
-    order: 2;
+    order: 3;
     
     flex-grow: 1;
     display: flex;
@@ -259,7 +267,7 @@ button {
 }
 
 #keyboard-cont {    
-    order: 3;
+    order: 4;
     width: 375px;
     
     padding: 0 0 10px 0;
