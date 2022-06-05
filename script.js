@@ -969,10 +969,6 @@ function allListeners() {
     // set share action on share button push
     document.getElementById("share-button").addEventListener("click", (e) => {   
         let shareText = shareResults();
-        console.log('shareText-')
-        console.log(shareText)
-        
-        alert(navigator.canShare)
         
         if (navigator.canShare) {
             navigator.share({
@@ -980,10 +976,9 @@ function allListeners() {
                 text: shareText,
                 url: 'https://word-wheel.herokuapp.com'
             })
-            .then(() => alert('Share was successful.'))
-            .catch((error) => alert('Sharing failed', error));
+            .then(() => console.log('Share was successful.'))
+            .catch((error) => console.log('Sharing failed', error));
         } else {
-            alert('fallback')
             // fallback of just copy to clipboard
             navigator.clipboard.writeText(shareText);
 
