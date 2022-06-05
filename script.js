@@ -839,7 +839,6 @@ function youWin() {
 }
 
 function shareResults() {
-    console.log('shareResults');
     // create the text to share
     let shareText = 'I won Word Wheel! \n';
     // iterate through words
@@ -859,7 +858,7 @@ function shareResults() {
         shareText = shareText.concat('\n');
     }
     
-    shareText = shareText.concat('\nTry it yourself: https://word-wheel.herokuapp.com');
+    shareText = shareText.concat('\nCan you do better?');
     
     return shareText;
 }
@@ -980,7 +979,7 @@ function allListeners() {
             .catch((error) => console.log('Sharing failed', error));
         } else {
             // fallback of just copy to clipboard
-            navigator.clipboard.writeText(shareText);
+            navigator.clipboard.writeText(shareText.concat('https://word-wheel.herokuapp.com'));
 
             document.getElementById('you-win-text').textContent = 'Copied to clipboard';
         }
