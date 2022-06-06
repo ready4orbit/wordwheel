@@ -1,5 +1,5 @@
 const WORDS = [
-    'theif',
+    'thief',
     'fog',
     'garden',
     'nomad',
