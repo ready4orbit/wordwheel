@@ -971,6 +971,7 @@ function loadArchive () {
 
 function youWin() {
     gameOver = true;
+    runTimer = false; // pause the timer
     
     document.getElementById("you-win").style.display = "block";
     
