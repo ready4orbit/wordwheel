@@ -1,18 +1,18 @@
 {
    "words":[
-        'yell',
-        'leech',
-        'headline',
-        'ending',
-        'groggy',
-        'yesterday'
+      "yell",
+      "leech",
+      "headline",
+      "ending",
+      "groggy",
+      "yesterday"
    ],
    "clues":[
-        'Shout',
-        'Parasite',
-        'Something you might click',
-        'Subject of a \"spoiler alert\"',
-        'Operating on little sleep, say',
-        'It\'s just a memory'
+      "Shout",
+      "Parasite",
+      "Something you might click",
+      "Subject of a \"spoiler alert\"",
+      "Operating on little sleep, say",
+      "It\\'s just a memory"
    ]
 }

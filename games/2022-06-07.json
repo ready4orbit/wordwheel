@@ -1,18 +1,18 @@
 {
    "words":[
-        'meat',
-        'trap',
-        'plum',
-        'might',
-        'threat',
-        'tourism'
+      "meat",
+      "trap",
+      "plum",
+      "might",
+      "threat",
+      "tourism"
    ],
    "clues":[
-        'What vegetarians don\'t eat',
-        'Ensnare',
-        'A color and flavor',
-        'Strength',
-        'One might be veiled',
-        '21% of Hawaii\'s economy'
+      "What vegetarians don\\'t eat",
+      "Ensnare",
+      "A color and flavor",
+      "Strength",
+      "One might be veiled",
+      "21% of Hawaii\\'s economy"
    ]
 }
