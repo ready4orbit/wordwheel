@@ -9,19 +9,37 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="start-game">
+        <div id="start-game-text">
+            <b>Game Rules</b>
+            <br/><br/>
+            Use the clues to guess all the words.
+            <br/><br/>
+            Every 15 seconds, a new letter is revealed.
+            <br/><br/>
+        </div>
+        <div>
+            <button id="start-button" class="keyboard-button">Start Game</button>
+        </div>
+    </div>
+    <div id="archive">
+        <div id="archive-text">
+            <b>Select a previous game</b>
+            <div id="archive-scroll">
+                <div class="archive-entry">Loading...</div>
+            </div>
+        </div>
+        <div>
+            <button id="archive-load" class="keyboard-button archive-load">Load</button>
+            <button id="archive-cancel" class="keyboard-button">Cancel</button>
+        </div>
+    </div>
     <div id="you-win">
         <div id="you-win-text">
             Congrats you won!
         </div>
         <div>
             <button id="share-button" class="keyboard-button">Share results</button>
-        </div>
-    </div>
-    <div id="give-hint">
-        <div>Are you sure you want a hint?</div>
-        <div id="hint-controls">
-            <button class="keyboard-button">Yes</button>
-            <button class="keyboard-button">No</button>
         </div>
     </div>
     <div id="game-container">
@@ -33,11 +51,12 @@
             <div id="game-board"></div>
             <div id="keyboard-cont">
                 <div id="tool-bar">
-                    <div id="tool-item"></div>
+                    <div class="tool-item">
+                    </div>
                     <div id="progress-bar">
                     </div>
-                    <div id="tool-item">
-                        <button id="hint-button" class="tool-button">&#9733;</button>
+                    <div class="tool-item">
+                        <button id="hint-timer" class="tool-button">15</button>
                     </div>
                 </div>
                 <div class="first-row">

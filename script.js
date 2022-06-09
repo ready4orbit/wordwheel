@@ -16,6 +16,8 @@ https://www.freecodecamp.org/news/build-a-wordle-clone-in-javascript/
 **/
 
 // set some variables
+let WORDS = [];
+let CLUES = [];
 let NUMBER_OF_WORDS = 6; // default 6
 let animDelay = 6;
 let inactiveLine = '#aaaaaa'
@@ -31,76 +33,143 @@ let thisDate = new Date();
 let currentGuess = '';
 let currentGuesses = Array(NUMBER_OF_WORDS);
 let currentHints = Array(NUMBER_OF_WORDS);
+let currentTimers = Array(NUMBER_OF_WORDS);
+let runTimer = false;
 let thisLetter = 0;
 let curClue = 0;
+let loadGame = '';
 
-// start the game
-function gameLoader() {
-    // function to see if javascript file exists
-    function checkFileExist(urlToFile) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('HEAD', urlToFile, false);
-        xhr.send();
+// div elements
+let timerObj = document.getElementById("hint-timer");
 
-        if (xhr.status == "404") {
-            return false;
-        } else {
-            return true;
-        }
-    }
+// start the game if user clicks the button
+function gameButton() {
+    // set button text to loading
+    document.getElementById("start-button").textContent = ". . Loading . .";
     
+    // load game
+    gameLoader();
+}
+
+// check if there is a game and load it, or start a new one
+function gameLoader() {
     // starting with today's date, iterate back until you find a game file that exists and load it
     let gameLoaded = false;
-    for (let i = 0; gameLoaded == false && i < 10; i++) {
+    for (let i = 0; gameLoaded == false && i < 100; i++) {
         var dateOffset = (24*60*60*1000) * i; //i days back
-        let newDate = thisDate
+        let newDate = thisDate;
         newDate.setTime(thisDate.getTime() - dateOffset);
         
         // create file name
-        let fileName = 'games/' + readableDate(newDate) + '.js';
+        let fileName = 'games/' + readableDate(newDate) + '.json';
         
         // See if the file exists
         if(checkFileExist(fileName)){
+            console.log('fileExists:'+fileName)
             // if so, load the file and set the date
             thisDate = newDate; 
-            let gameScript = document.createElement('script');
-            gameScript.onload = function () {
-                startGame();
-            };
-            gameScript.src = fileName;
-
-            document.head.appendChild(gameScript);
-            
             gameLoaded = true;
+            
+            fetch(fileName)
+                .then(response => response.json())
+                .then(data => {
+                    WORDS = data.words;
+                    CLUES = data.clues;
+
+                    startGame();
+                })
+                .catch(console.error);
         }
     }
 }
 
 function startGame() {
+    // hide overlays
+    document.getElementById("start-game").style.display = "none";
+    document.getElementById("archive").style.display = "none";
+    document.getElementById("you-win").style.display = "none";
+    
     // set some variables
     NUMBER_OF_WORDS = WORDS.length;
     
     loadCookie();
-    // initHints();
-    // initBoard();
     allListeners();
+    
+    // start timer interval in milliseconds
+    setInterval(gameTimer, 1000);
 }
 
-function initHints () { 
-    // see if cookie with thisDate, if so set guess and hint arrays
-    // if not cookie, start clean game
+function loadCookie () {
+    // see if there is a cookie for the current game and load relevant data
     
-    // create the array to contain hint guides
-    for (let i = 0; i < WORDS.length; i++) {
-        // iterate through each word, create a string of that word length of 'x' for no hint
+    function getCookieValue(name) {
+        const nameString = name + "="
+
+        const value = document.cookie.split(";").filter(item => {
+            return item.includes(nameString)
+        })
+
+        if (value.length) {
+            return value[0].substring(nameString.length, value[0].length)
+        } else {
+            return ""
+        }
+    }
+    
+    let previouslyPlayed = false;
+    let data = getCookieValue(readableDate(thisDate));
+    if (data != '') { // if there is a cookie for this date
+        var cookieObj = JSON.parse(data);
         
-        let hintHolder = '';
-        for (let j = 0; j < WORDS[i].length; j++) {
-            hintHolder = hintHolder.concat('x'); // fill with empty code 'x'
+        // load game date
+        let gameDate = cookieObj.date;
+        
+        if (gameDate == readableDate(thisDate)) {
+            // if there are guesses for this game date
+            previouslyPlayed = true
+            
+            // load guesses array
+            let cookieGuesses = Array.from(JSON.parse(cookieObj.guesses));
+
+            // load hint array
+            let cookieHints = Array.from(JSON.parse(cookieObj.hints));
+            
+            // load timer array
+            let cookieTimers = Array.from(JSON.parse(cookieObj.timers));
+
+            currentGuesses = cookieGuesses;
+            currentHints = cookieHints;
+            currentTimers = cookieTimers;
+        }
+    }
+    
+    // if the player hasn't played recently
+    if (!previouslyPlayed) {
+        // if you haven't previous played, fresh guess arrays
+        currentGuesses = Array(NUMBER_OF_WORDS);
+        
+        // create the array to contain hint guides
+        currentHints = Array(NUMBER_OF_WORDS);
+        for (let i = 0; i < WORDS.length; i++) {
+            // iterate through each word, create a string of that word length of 'x' for no hint
+
+            let hintHolder = '';
+            for (let j = 0; j < WORDS[i].length; j++) {
+                hintHolder = hintHolder.concat('x'); // fill with empty code 'x'
+            }
+
+            currentHints[i] = hintHolder;
         }
         
-        currentHints[i] = hintHolder;
-    }    
+        // create array for timers
+        const timerVal = 15;
+        currentTimers = Array(NUMBER_OF_WORDS);
+        for (let i = 0; i < WORDS.length; i++) {
+            // iterate through each word, create a timer of X seconds
+            currentTimers[i] = timerVal;
+        }
+    }
+    initBoard();
 }
 
 function initBoard() {
@@ -223,10 +292,22 @@ function initBoard() {
     clueText.textContent = CLUES[curClue]
     board.appendChild(clueText)
     
+    // show time left based on timer array value
+    timerObj.textContent = currentTimers[curClue];
+    
+    // set type to red if 5 seconds or less
+    if (currentTimers[curClue] <= 5) {
+        timerObj.classList.add("hint-alert");
+        timerObj.classList.remove("hint-timer");
+    } else {
+        timerObj.classList.add("hint-timer");
+        timerObj.classList.remove("hint-alert");
+    }
+    
     // set progress
     createProgress();
     
-    // set hint button color if available hints    
+    // turn on timer if there are available hints    
     let availableHints = [];
     for (let i = 1; i < WORDS[curClue].length - 1; i++) {
         if (currentHints[curClue][i] != 'h') { // check if it's not an 'h'
@@ -234,13 +315,6 @@ function initBoard() {
             availableHints.push(i);
             i = WORDS[curClue].length;
         }
-    }
-    
-    // if there is at least one hint available, generate hint
-    if (availableHints.length > 0) {
-        document.getElementById("hint-button").style.color = "#000000";
-    } else {
-        document.getElementById("hint-button").style.color = "#aaaaaa";
     }
     
     checkGuesses ()
@@ -260,10 +334,16 @@ function colorBoxandLine () {
         } else {
             // if current guess is the correct word, set to green
             if (currentGuess == WORDS[curClue]) {
-                box.classList.add("correct-box")
-                setLineColor('left', correctLine)
-                setLineColor('right', correctLine)
+                box.classList.add("correct-box");
+                setLineColor('left', correctLine);
+                setLineColor('right', correctLine);
+                
+                // turn off timer
+                runTimer = false;
             } else { // if not, remove green
+                // turn on timer
+                runTimer = true;
+                
                 box.classList.remove("correct-box")
                 let boxContents = box.textContent
 
@@ -368,6 +448,40 @@ function createProgress() {
         }
         
         progressBar.appendChild(progressDot)
+    }
+}
+
+function gameTimer() {
+    // this is the function that tracks the game timer and auto generates hints when needed
+    
+    // if the timer is on, run the timer actions
+    if (runTimer) {
+        // subtract one second from the timer
+        let timerSet = currentTimers[curClue];
+        timerSet--;
+        
+        // if the timer is <= 5, set color to red, if not, black
+        if (timerSet <= 5) {
+            timerObj.classList.add("hint-alert");
+            timerObj.classList.remove("hint-timer");
+        } else {
+            timerObj.classList.add("hint-timer");
+            timerObj.classList.remove("hint-alert");
+        }
+        
+        // if -1, set back to 15 and display a clue, set universal array
+        if (timerSet < 0) {
+            timerSet = 15;
+            currentTimers[curClue] = timerSet;
+            
+            generateHint();
+        } else {
+            currentTimers[curClue] = timerSet;
+            document.getElementById("hint-timer").textContent = timerSet;
+        }
+        
+        // update cookie
+        setCookie();
     }
 }
 
@@ -563,8 +677,8 @@ function logGuess () {
     //console.log(currentGuesses)
 }
 
-// function to make a YYYY-MM-DD date based on a date object
 function readableDate(varDate) {
+    // function to make a YYYY-MM-DD date based on a date object
     let dd = String(varDate.getDate()).padStart(2, '0');
     let mm = String(varDate.getMonth() + 1).padStart(2, '0'); //January is 0!
     let yyyy = varDate.getFullYear();
@@ -579,6 +693,7 @@ function setCookie () {
     cookieObject.date = readableDate(thisDate);
     cookieObject.guesses = JSON.stringify(currentGuesses);
     cookieObject.hints = JSON.stringify(currentHints);
+    cookieObject.timers = JSON.stringify(currentTimers);
     let jsonObject = JSON.stringify(cookieObject);
     
     // create expiration date 10 years in the future
@@ -586,69 +701,11 @@ function setCookie () {
     futureDate.setTime(futureDate.getTime() + (10*365*24*60*60*1000));    
     let cookieExpiry = 'expires='.concat(futureDate.toUTCString())
     
-    // add it all together
-    let fullCookie = "data=".concat(jsonObject,';', cookieExpiry, ';', 'SameSite=Strict', ';')
+    // add it all together, named after this game date
+    let fullCookie = readableDate(thisDate).concat('=',jsonObject,';', cookieExpiry, ';', 'SameSite=Strict', ';')
     
     // set/update cookie
     document.cookie = fullCookie
-}
-
-function loadCookie () {
-    function getCookieValue(name) {
-        const nameString = name + "="
-
-        const value = document.cookie.split(";").filter(item => {
-            return item.includes(nameString)
-        })
-
-        if (value.length) {
-            return value[0].substring(nameString.length, value[0].length)
-        } else {
-            return ""
-        }
-    }
-    
-    let previouslyPlayed = false;
-    let data = getCookieValue("data");
-    if (data != '') { // if there is a cookie
-        var cookieObj = JSON.parse(getCookieValue("data"));
-        
-        // load game date
-        let gameDate = cookieObj.date;
-        
-        if (gameDate == readableDate(thisDate)) {
-            // if there are guesses for this game date
-            previouslyPlayed = true
-            
-            // load guesses array
-            let cookieGuesses = Array.from(JSON.parse(cookieObj.guesses));
-
-            // load hint array
-            let cookieHints = Array.from(JSON.parse(cookieObj.hints));
-
-            currentGuesses = cookieGuesses;
-            currentHints = cookieHints;
-        }
-    }
-    
-    if (!previouslyPlayed) {
-        // if you haven't previous played, fresh guess and hint arrays
-        currentGuesses = Array(NUMBER_OF_WORDS);
-        currentHints = Array(NUMBER_OF_WORDS);
-        
-        // create the array to contain hint guides
-        for (let i = 0; i < WORDS.length; i++) {
-            // iterate through each word, create a string of that word length of 'x' for no hint
-
-            let hintHolder = '';
-            for (let j = 0; j < WORDS[i].length; j++) {
-                hintHolder = hintHolder.concat('x'); // fill with empty code 'x'
-            }
-
-            currentHints[i] = hintHolder;
-        } 
-    }
-    initBoard();
 }
 
 function nextWord () {
@@ -756,23 +813,6 @@ function slideInClue(slideDir) {
     }
 }
 
-function showHint () {
-    let availableHints = [];
-    
-    // iterate through hint guide from second letter to second to last
-    for (let i = 1; i < WORDS[curClue].length - 1; i++) {
-        if (currentHints[curClue][i] != 'h') { // check if it's not an 'h'
-            // add to available hint array
-            availableHints.push(i);
-        }
-    }
-    
-    // if there is at least one hint available, generate hint
-    if (availableHints.length > 0) {
-        document.getElementById("give-hint").style.display = "block";
-    }
-}
-
 function generateHint() {    
     let availableHints = [];
     
@@ -791,7 +831,7 @@ function generateHint() {
         let hintPosition = randHint;
         let hintLetter = WORDS[curClue][hintPosition];
 
-        // iterate through each letter of the word, to create a placeholder word with spaces
+        // iterate through each letter of the word, to create a placeholder word with spaces, or existing letters if there are already hints
         let updatedGuess = '';
 
         for (let i = 0; i < WORDS[curClue].length; i++) {        
@@ -839,10 +879,120 @@ function checkGuesses () {
     }
 }
 
+function showArchive () {
+    // display the archive window
+    document.getElementById("archive").style.display = "block";
+    let archiveScroll = document.getElementById('archive-scroll');
+    archiveScroll.innerHTML = 'Loading...';
+    runTimer = false; // pause the timer
+    
+    // set load game button push listener
+    document.getElementById("archive-load").addEventListener("click", (e) => {
+        loadArchive();
+    })
+    
+    // set cancel hide window
+    document.getElementById("archive-cancel").addEventListener("click", (e) => {
+        document.getElementById("archive").style.display = "none";
+        runTimer = true; // pause the timer
+    })
+    
+    function highlightDate (thisEntry) {
+        // highlight the chosen date and unhighlight the rest
+        
+        // iterate through each entry
+        for (let i = 0; i < archiveScroll.children[0].children.length; i++) {
+            if (archiveScroll.children[0].children[i].id == thisEntry) {
+                // highlight this div
+                archiveScroll.children[0].children[i].classList.add("archive-select");
+            } else {
+                // make this div normal 
+                archiveScroll.children[0].children[i].classList.remove("archive-select");
+            }
+        }
+    }
+    
+    // load the list of previous games for last 365 days
+    let archiveEntries = document.createElement("div")
+    for (let i = 0; i < 365; i++) {
+        var dateOffset = (24*60*60*1000) * i; //i days back
+        let newDate = new Date();
+        newDate.setTime(newDate.getTime() - dateOffset);
+        
+        // create file name
+        let fileName = 'games/' + readableDate(newDate) + '.json';
+        
+        // See if the file exists
+        
+        
+        if(checkFileExist(fileName)){
+            // if so add item to list
+            
+            let archiveEntry = document.createElement("div")
+            archiveEntry.className = "archive-entry"
+            archiveEntry.id = readableDate(newDate);
+            
+            // create a "Jul 2, 2021" date
+            let displayDate = newDate.toLocaleDateString('en-us', { weekday:"short", year:"numeric", month:"short", day:"numeric"}).substring(0, 3).concat(newDate.toLocaleDateString('en-us', { weekday:"short", year:"numeric", month:"short", day:"numeric"}).substring(4));
+            archiveEntry.textContent = displayDate;
+            
+            // attach listener to load date
+            archiveEntry.addEventListener("click", (e) => {
+                loadGame = archiveEntry.id;
+                console.log('loadGameX:'+loadGame)
+                highlightDate(archiveEntry.id);
+            })
+            
+            archiveEntries.appendChild(archiveEntry)
+        }
+    }
+    
+    // append list to scroll
+    archiveScroll.innerHTML = '';
+    archiveScroll.appendChild(archiveEntries)
+}
+
+function loadArchive () {
+    console.log('loadgameY:'+loadGame)
+    // if the load game isn't blank, load the game
+    if (loadGame != '') {
+        // load game with the date loadGame
+        var newGame = new Date(loadGame);
+        newGame.setDate(newGame.getDate() + 1);
+
+        // set game date to loaded date
+        thisDate = newGame;
+        console.log(newGame.toDateString());
+
+        // start new game with that date
+        gameLoader();
+    }  
+}
+
 function youWin() {
     gameOver = true;
     
     document.getElementById("you-win").style.display = "block";
+    
+    // set share action on share button push
+    document.getElementById("share-button").addEventListener("click", (e) => {   
+        let shareText = shareResults();
+        
+        if (navigator.canShare) {
+            navigator.share({
+                title: 'WordWheel',
+                text: shareText,
+                url: 'https://word-wheel.herokuapp.com'
+            })
+            .then(() => console.log('Share was successful.'))
+            .catch((error) => console.log('Sharing failed', error));
+        } else {
+            // fallback of just copy to clipboard
+            navigator.clipboard.writeText(shareText.concat('https://word-wheel.herokuapp.com'));
+
+            document.getElementById('you-win-text').textContent = 'Copied to clipboard';
+        }
+    })
 }
 
 function shareResults() {
@@ -873,6 +1023,19 @@ function shareResults() {
     return shareText;
 }
 
+function checkFileExist(urlToFile) {
+    // function to see if javascript file exists
+    var xhr = new XMLHttpRequest();
+    xhr.open('HEAD', urlToFile, false);
+    xhr.send();
+
+    if (xhr.status == "404") {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 function allListeners() {
     document.addEventListener("keyup", (e) => {
         let pressedKey = String(e.key)
@@ -896,11 +1059,6 @@ function allListeners() {
 
             if (pressedKey === "Enter") {
                 nextWord()
-                return
-            }
-
-            if (pressedKey === "Hint") {
-                showHint()
                 return
             }
 
@@ -953,60 +1111,16 @@ function allListeners() {
       touchendX = e.changedTouches[0].screenX
       handleGesture()
     })
-
-    // set hint button action on button push
-    document.getElementById("hint-controls").addEventListener("click", (e) => {
-        const target = e.target
-
-        if (target.tagName != 'BUTTON') {
-            return
-        }
-        let key = target.textContent
-
-        if (key == "Yes") {
-            // show hint
-            generateHint();
-            document.getElementById("give-hint").style.display = "none";
-        }
-
-        if (key == "No") {
-            // hide box
-            document.getElementById("give-hint").style.display = "none";
-        }
-    })
-
-    // set share action on share button push
-    document.getElementById("share-button").addEventListener("click", (e) => {   
-        let shareText = shareResults();
-        
-        if (navigator.canShare) {
-            navigator.share({
-                title: 'WordWheel',
-                text: shareText,
-                url: 'https://word-wheel.herokuapp.com'
-            })
-            .then(() => console.log('Share was successful.'))
-            .catch((error) => console.log('Sharing failed', error));
-        } else {
-            // fallback of just copy to clipboard
-            navigator.clipboard.writeText(shareText.concat('https://word-wheel.herokuapp.com'));
-
-            document.getElementById('you-win-text').textContent = 'Copied to clipboard';
-        }
-        
-        /*
-        if (navigator.share) {
-            navigator.share({
-                text: shareText
-            })
-        } else {
-            // fallback of just copy to clipboard
-            navigator.clipboard.writeText(shareText);
-
-            document.getElementById('you-win-text').textContent = 'Copied to clipboard';
-        }
-        */
-    })
 }
 
-gameLoader()
+// attach boot up game function to start button
+document.getElementById("start-button").addEventListener("click", (e) => {   
+    gameButton();
+})
+
+/*
+// attach archive window to logo
+document.getElementById("logo-cont").addEventListener("click", (e) => {   
+    showArchive();
+})
+*/

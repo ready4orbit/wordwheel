@@ -8,6 +8,81 @@ body {
     font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 
+#start-game {
+    display: block;
+    
+    position: absolute;
+    width: 200px;
+    z-index: 9;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    
+    background: white;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    
+    padding: 3rem;
+    text-align: center;
+}
+
+#start-game-text {
+    font-size: 1.2rem;
+}
+
+#start-game button {
+    background-color: #c4ebc6;
+}
+
+#archive {
+    display: none;
+    
+    position: absolute;
+    width: 200px;
+    z-index: 9;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    
+    background: white;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    
+    padding: 3rem;
+    text-align: center;
+    align-items: center;
+}
+
+#archive-scroll {
+    height: 15rem;
+    width: 200px;
+    background: #e9e9e9;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    line-height: 1.8;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin: 1rem;
+    padding: 1rem;
+    text-align: left;
+    
+    transform: translate(-2rem, 0%);
+}
+
+.archive-entry {
+    cursor: pointer;
+    padding: .2rem .2rem .2rem .9rem;
+}
+
+#archive-load {
+    background-color: #c4ebc6;
+}
+
+.archive-select {
+    font-weight: 700;
+    background: #ffffff;
+}
+
 #you-win {
     display: none;
     
@@ -30,48 +105,8 @@ body {
     margin-top: 1rem;
 }
 
-#share-button {
+#you-win button {
     background-color: #c4ebc6;
-}
-
-#give-hint {
-    display: none;
-    
-    position: absolute;
-    width: 200px;
-    z-index: 9;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    
-    background: white;
-    border: 1px solid #000000;
-    border-radius: 5px;
-    
-    padding: 3rem;
-    text-align: center;
-}
-
-#archive {
-    display: none;
-    
-    position: absolute;
-    width: 200px;
-    z-index: 9;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    
-    background: white;
-    border: 1px solid #000000;
-    border-radius: 5px;
-    
-    padding: 3rem;
-    text-align: center;
-}
-
-#give-hint div {
-    margin: 1rem;
 }
 
 #game-container {
@@ -101,6 +136,8 @@ body {
     
     text-align: center;
     margin: 2rem;
+    
+    cursor: pointer;
 }
 
 #game-logo {
@@ -233,11 +270,11 @@ button {
     display: flex;
     justify-content: space-between;
     vertical-align: middle;
-    width: 100%;
-    margin-bottom: 0.5rem;
+    width: 370px;
+    margin-bottom: 0.5rem;    
 }
 
-#tool-item {
+.tool-item {
     width: 50px;
     vertical-align: middle;
     text-align: center;
@@ -257,8 +294,13 @@ button {
     text-transform: uppercase;
 }
 
-#hint-button {
+.hint-timer {
     color: #000000;
+}
+
+.hint-alert {
+    color: red;
+    background: #ffb8b8;
 }
 
 #progress-bar {
