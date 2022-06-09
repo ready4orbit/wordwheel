@@ -27,6 +27,7 @@ let correctBG = '#c4ebc6'
 let leftLineColor = inactiveLine;
 let rightLineColor = inactiveLine;
 let gameOver = false;
+let gameInterval;
 let thisDate = new Date();
 
 // set some variables used to track the game
@@ -96,7 +97,7 @@ function startGame() {
     allListeners();
     
     // start timer interval in milliseconds
-    setInterval(gameTimer, 1000);
+    gameInterval = setInterval(gameTimer, 1000);
 }
 
 function loadCookie () {
@@ -737,6 +738,9 @@ function prevWord () {
 }
 
 function slideOutClue (slideDir) {
+    // turn off timer during animation
+    clearInterval(gameInterval); 
+    
     for (let i = 0; i <= 50; i++) {
         let delay = animDelay * i
         
@@ -812,6 +816,11 @@ function slideInClue(slideDir) {
                 
                 document.getElementById("game-lines-left").style.width = lineSmall;
                 document.getElementById("game-lines-right").style.width = lineBig;
+            }
+            
+            if (k == 50) {
+                // turn back on timer
+                gameInterval = setInterval(gameTimer, 1000);
             }
         }, delay)
     }
