@@ -119,7 +119,7 @@ function loadCookie () {
     let previouslyPlayed = false;
     let data = getCookieValue(readableDate(thisDate));
     if (data != '') { // if there is a cookie for this date
-        if (data.substring(0,1) = "=") {
+        if (data.substring(0,1) == "=") {
             // trim first character
             data = data.substring(1);
         }
