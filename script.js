@@ -496,7 +496,6 @@ function gameTimer() {
 }
 
 function insertLetter (pressedKey) {
-    console.log('insertLetter:'+pressedKey)
     let spacer = ' ';
     pressedKey = pressedKey.toLowerCase()
     
