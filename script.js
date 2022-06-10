@@ -28,6 +28,7 @@ let leftLineColor = inactiveLine;
 let rightLineColor = inactiveLine;
 let gameOver = false;
 let gameInterval;
+let listenersLoaded = false; // make sure not to double load listeners
 let thisDate = new Date();
 
 // set some variables used to track the game
@@ -66,7 +67,6 @@ function gameLoader() {
         
         // See if the file exists
         if(checkFileExist(fileName)){
-            console.log('fileExists:'+fileName)
             // if so, load the file and set the date
             thisDate = newDate; 
             gameLoaded = true;
@@ -94,28 +94,33 @@ function startGame() {
     NUMBER_OF_WORDS = WORDS.length;
     
     loadCookie();
-    allListeners();
+    if (!listenersLoaded) {
+        // toggle variable to only load listeners once
+        allListeners();
+        listenersLoaded = true;
+    }
     
     // start timer interval in milliseconds
+    clearInterval(gameInterval);
     gameInterval = setInterval(gameTimer, 1000);
+}
+
+function getCookieValue(name) {
+    const nameString = name + "="
+
+    const value = document.cookie.split(";").filter(item => {
+        return item.includes(nameString)
+    })
+
+    if (value.length) {
+        return value[0].substring(nameString.length, value[0].length)
+    } else {
+        return ""
+    }
 }
 
 function loadCookie () {
     // see if there is a cookie for the current game and load relevant data
-    
-    function getCookieValue(name) {
-        const nameString = name + "="
-
-        const value = document.cookie.split(";").filter(item => {
-            return item.includes(nameString)
-        })
-
-        if (value.length) {
-            return value[0].substring(nameString.length, value[0].length)
-        } else {
-            return ""
-        }
-    }
     
     let previouslyPlayed = false;
     let data = getCookieValue(readableDate(thisDate));
@@ -285,7 +290,7 @@ function initBoard() {
     } else {
         thisLetter = firstEmpty;
     }
-    
+
     board.appendChild(row)
     
     // set colors
@@ -491,6 +496,7 @@ function gameTimer() {
 }
 
 function insertLetter (pressedKey) {
+    console.log('insertLetter:'+pressedKey)
     let spacer = ' ';
     pressedKey = pressedKey.toLowerCase()
     
@@ -676,10 +682,6 @@ function logGuess () {
     
     // update cookies
     setCookie();
-    
-    //console.log(currentGuess)
-    //console.log('currentGuess:'+currentGuess)
-    //console.log(currentGuesses)
 }
 
 function readableDate(varDate) {
@@ -699,6 +701,7 @@ function setCookie () {
     cookieObject.guesses = JSON.stringify(currentGuesses);
     cookieObject.hints = JSON.stringify(currentHints);
     cookieObject.timers = JSON.stringify(currentTimers);
+    cookieObject.win = gameOver;
     let jsonObject = JSON.stringify(cookieObject);
     
     // create expiration date 10 years in the future
@@ -907,7 +910,9 @@ function showArchive () {
     // set cancel hide window
     document.getElementById("archive-cancel").addEventListener("click", (e) => {
         document.getElementById("archive").style.display = "none";
-        runTimer = true; // pause the timer
+        if (!gameOver) {
+            runTimer = true; // restart the timer if the game isn't over
+        }  
     })
     
     function highlightDate (thisEntry) {
@@ -945,6 +950,33 @@ function showArchive () {
             archiveEntry.className = "archive-entry"
             archiveEntry.id = readableDate(newDate);
             
+            // see if there is a cookie for that date
+            let data = getCookieValue(readableDate(newDate));
+            if (data != '') { // if there is a cookie for this date
+                if (data.substring(0,1) == "=") {
+                    // trim first character
+                    data = data.substring(1);
+                }
+                var cookieObj = JSON.parse(data);
+
+                // load game date
+                let gamewin = cookieObj.win;
+                
+                // is gamewin is true, indicate finished game, otherwise, indicate incomplete
+                if (gamewin) {
+                    // indicate won game
+                    let entryStyle = 'archive-entry-win'
+                    archiveEntry.classList.add(entryStyle);
+                } else {
+                    // indicate incomplete game
+                    let entryStyle = 'archive-entry-incomplete'
+                    archiveEntry.classList.add(entryStyle);
+                }
+            } else {
+                let entryStyle = 'archive-entry-unstarted'
+                archiveEntry.classList.add(entryStyle);
+            }
+            
             // create a "Jul 2, 2021" date
             let displayDate = newDate.toLocaleDateString('en-us', { weekday:"short", year:"numeric", month:"short", day:"numeric"}).substring(0, 3).concat(newDate.toLocaleDateString('en-us', { weekday:"short", year:"numeric", month:"short", day:"numeric"}).substring(4));
             archiveEntry.textContent = displayDate;
@@ -952,7 +984,6 @@ function showArchive () {
             // attach listener to load date
             archiveEntry.addEventListener("click", (e) => {
                 loadGame = archiveEntry.id;
-                console.log('loadGameX:'+loadGame)
                 highlightDate(archiveEntry.id);
             })
             
@@ -966,7 +997,6 @@ function showArchive () {
 }
 
 function loadArchive () {
-    console.log('loadgameY:'+loadGame)
     // if the load game isn't blank, load the game
     if (loadGame != '') {
         // load game with the date loadGame
@@ -975,7 +1005,9 @@ function loadArchive () {
 
         // set game date to loaded date
         thisDate = newGame;
-        console.log(newGame.toDateString());
+        
+        // set to new game
+        gameOver = false;
 
         // start new game with that date
         gameLoader();
@@ -985,6 +1017,7 @@ function loadArchive () {
 function youWin() {
     gameOver = true;
     runTimer = false; // pause the timer
+    setCookie();
     
     document.getElementById("you-win").style.display = "block";
     
@@ -1053,7 +1086,7 @@ function checkFileExist(urlToFile) {
 function allListeners() {
     document.addEventListener("keyup", (e) => {
         let pressedKey = String(e.key)
-
+        
         if (pressedKey === "ArrowLeft") {
             prevWord()
             return
@@ -1064,7 +1097,7 @@ function allListeners() {
             return
         }
 
-        if (gameOver === false) {
+        if (gameOver == false) {
 
             if (pressedKey === "Backspace") {
                 deleteLetter()
@@ -1101,10 +1134,6 @@ function allListeners() {
             key = "Return"
         }
 
-        if (key === "\u2605") {
-            key = "Hint"
-        }
-
         document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}))
     })
     
@@ -1132,9 +1161,7 @@ document.getElementById("start-button").addEventListener("click", (e) => {
     gameButton();
 })
 
-/*
 // attach archive window to logo
 document.getElementById("logo-cont").addEventListener("click", (e) => {   
     showArchive();
 })
-*/
