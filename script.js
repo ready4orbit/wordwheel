@@ -988,10 +988,10 @@ function showArchive () {
             })
             
             archiveEntries.appendChild(archiveEntry)
+        } else {
+            // no more games, end list
+            i = 365;
         }
-    } else {
-        // no more games, end list
-        i = 365;
     }
     
     // append list to scroll
