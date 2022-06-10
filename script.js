@@ -875,13 +875,13 @@ function generateHint() {
 function checkGuesses () {
     
     // does the current guess match the current word
-    if (currentGuess.toLowerCase() == WORDS[curClue].toLowerCase()) {
+    if (currentGuess == WORDS[curClue]) {
         //check all words        
         let z = 0;
         
         // do all guesses match all words
         for (let i = 0; i < WORDS.length; i++) {
-            if (currentGuesses[i].toLowerCase() === WORDS[i].toLowerCase()) {
+            if (currentGuesses[i] === WORDS[i]) {
                 z++;
             }
         }
