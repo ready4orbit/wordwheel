@@ -914,7 +914,11 @@ function showArchive () {
         }  
     })
     
-    archiveEntryLoad ();
+    let delay = 1000
+    setTimeout(()=> {
+        // after short delay, load previous games
+        archiveEntryLoad ();
+    }, delay)
 }
 
 function archiveEntryLoad () {
