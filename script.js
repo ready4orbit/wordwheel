@@ -960,7 +960,12 @@ function showArchive () {
                 var cookieObj = JSON.parse(data);
 
                 // load game date
-                let gamewin = cookieObj.win;
+                if (cookieObj.win != undefined) {
+                    let gamewin = cookieObj.win;
+                } else {
+                    let gamewin = false;
+                }
+                
                 
                 // is gamewin is true, indicate finished game, otherwise, indicate incomplete
                 if (gamewin) {
