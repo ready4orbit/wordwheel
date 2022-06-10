@@ -914,6 +914,12 @@ function showArchive () {
         }  
     })
     
+    archiveEntryLoad ();
+}
+
+function archiveEntryLoad () {
+    // function to load previous games
+    let archiveScroll = document.getElementById('archive-scroll');
     function highlightDate (thisEntry) {
         // highlight the chosen date and unhighlight the rest
         
