@@ -960,10 +960,9 @@ function showArchive () {
                 var cookieObj = JSON.parse(data);
 
                 // load game date
+                let gamewin = false;
                 if (cookieObj.win != undefined) {
-                    let gamewin = cookieObj.win;
-                } else {
-                    let gamewin = false;
+                    gamewin = cookieObj.win;
                 }
                 
                 
