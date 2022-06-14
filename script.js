@@ -7,12 +7,9 @@ cd Documents/Web
 
 then
 
-python -m SimpleHTTPServer
+python3 -m http.server
 
 You should then be able to access at http://localhost:8000
-
-References: 
-https://www.freecodecamp.org/news/build-a-wordle-clone-in-javascript/
 **/
 
 // set some variables
@@ -89,6 +86,9 @@ function startGame() {
     document.getElementById("start-game").style.display = "none";
     document.getElementById("archive").style.display = "none";
     document.getElementById("you-win").style.display = "none";
+    
+    // show keyboard
+    document.getElementById("keyboard-cont").style.display = "flex";
     
     // set some variables
     NUMBER_OF_WORDS = WORDS.length;
@@ -901,6 +901,12 @@ function showArchive () {
     archiveScroll.innerHTML = 'Loading...';
     runTimer = false; // pause the timer
     
+    // hide share button if game is over
+    if (gameOver) {
+        document.getElementById("you-win").style.display = "none";
+    }
+    
+    
     // set load game button push listener
     document.getElementById("archive-load").addEventListener("click", (e) => {
         loadArchive();
@@ -911,7 +917,10 @@ function showArchive () {
         document.getElementById("archive").style.display = "none";
         if (!gameOver) {
             runTimer = true; // restart the timer if the game isn't over
-        }  
+        } else {
+            // reveal share box if game is over
+            document.getElementById("you-win").style.display = "block";
+        }
     })
     
     let delay = 1000
@@ -1036,6 +1045,9 @@ function youWin() {
     setCookie();
     
     document.getElementById("you-win").style.display = "block";
+    
+    // hide keyboard
+    document.getElementById("keyboard-cont").style.display = "none";
     
     // set share action on share button push
     document.getElementById("share-button").addEventListener("click", (e) => {   

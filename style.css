@@ -118,8 +118,8 @@ body {
     width: 200px;
     z-index: 10;
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    bottom: 2rem;
+    transform: translate(-50%, 0);
     
     background: white;
     border: 1px solid #000000;
@@ -129,11 +129,8 @@ body {
     text-align: center;
 }
 
-#you-win div {
-    margin-top: 1rem;
-}
-
 #you-win button {
+    margin-top: 1rem;
     background-color: #c4ebc6;
 }
 

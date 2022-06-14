@@ -46,7 +46,7 @@
     </div>
     <div id="you-win">
         <div id="you-win-text">
-            Congrats you won!
+            Congrats you won! 🥳
         </div>
         <div>
             <button id="share-button" class="keyboard-button">Share results</button>
