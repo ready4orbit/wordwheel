@@ -82,6 +82,9 @@ function gameLoader() {
 }
 
 function startGame() {
+    // reset clue number
+    curClue = 0;
+    
     // hide overlays
     document.getElementById("start-game").style.display = "none";
     document.getElementById("archive").style.display = "none";
