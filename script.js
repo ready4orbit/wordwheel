@@ -34,6 +34,7 @@ let currentGuesses = Array(NUMBER_OF_WORDS);
 let currentHints = Array(NUMBER_OF_WORDS);
 let currentTimers = Array(NUMBER_OF_WORDS);
 let runTimer = false;
+let totalTimer = 0;
 let thisLetter = 0;
 let curClue = 0;
 let loadGame = '';
@@ -84,6 +85,9 @@ function gameLoader() {
 function startGame() {
     // reset clue number
     curClue = 0;
+    
+    // reset timer
+    totalTimer = 0;
     
     // hide overlays
     document.getElementById("start-game").style.display = "none";
@@ -469,6 +473,9 @@ function gameTimer() {
     
     // if the timer is on, run the timer actions
     if (runTimer) {
+        // add time to total timer
+        totalTimer++;
+        
         // subtract one second from the timer
         let timerSet = currentTimers[curClue];
         timerSet--;
@@ -1042,10 +1049,40 @@ function loadArchive () {
     }  
 }
 
+function formatSecs (secs) {
+    let totalMS = secs * 1000; // convert to milliseconds
+    let d = new Date(Date.UTC(0,0,0,0,0,0,totalMS));
+    
+    // format the timer
+    let timerFormatted = ' in ';
+    let s;
+    
+    if (d.getUTCHours() > 0) { // only if it took longer than an hour
+        s = d.getUTCHours();
+        timerFormatted = timerFormatted.concat(String(s).padStart(2,'0'),':');
+    }
+    
+    s = d.getUTCMinutes();
+    timerFormatted = timerFormatted.concat(String(s),':');
+    
+    s = d.getUTCSeconds();
+    timerFormatted = timerFormatted.concat(String(s).padStart(2,'0'));
+    
+    return timerFormatted;
+}
+
 function youWin() {
     gameOver = true;
     runTimer = false; // pause the timer
     setCookie();
+    
+    let shareTimer = '';
+    if (totalTimer > 0) { // if there is a total time
+        shareTimer = formatSecs(totalTimer)
+    }
+    
+    let youWinText = 'Congrats you won'.concat(shareTimer, '! 🥳');
+    document.getElementById("you-win-text").innerHTML = youWinText;
     
     document.getElementById("you-win").style.display = "block";
     
@@ -1077,8 +1114,14 @@ function shareResults() {
     // create a "Jul 2, 2021" date
     let shareableDate = thisDate.toLocaleDateString('en-us', { year:"numeric", month:"short", day:"numeric"});
     
+    let shareTimer = '';
+    if (totalTimer > 0) { // if there is a total time
+        shareTimer = formatSecs(totalTimer)
+    }
+    
     // create the text to share
-    let shareText = 'I won Word Wheel!\n'.concat(shareableDate,'\r');
+    let shareText = 'I won Word Wheel'.concat(shareTimer,'! 🥳\n')
+    shareText = shareText.concat(shareableDate,'\r');
     // iterate through words
     for (let i = 0; i < WORDS.length; i++) {
         
