@@ -86,9 +86,6 @@ function startGame() {
     // reset clue number
     curClue = 0;
     
-    // reset timer
-    totalTimer = 0;
-    
     // hide overlays
     document.getElementById("start-game").style.display = "none";
     document.getElementById("archive").style.display = "none";
@@ -153,7 +150,17 @@ function loadCookie () {
             
             // load timer array
             let cookieTimers = Array.from(JSON.parse(cookieObj.timers));
-
+            
+            // if totalTime was recorded set it
+            if (cookieObj.totaltime) {
+                let cookieTotalTime = cookieObj.totaltime;
+                totalTimer = cookieTotalTime;
+                
+                console.log(totalTimer);
+            } else {
+                totalTimer = 0;
+            }
+            
             currentGuesses = cookieGuesses;
             currentHints = cookieHints;
             currentTimers = cookieTimers;
@@ -162,6 +169,9 @@ function loadCookie () {
     
     // if the player hasn't played recently
     if (!previouslyPlayed) {
+        // reset timer
+        totalTimer = 0;
+        
         // if you haven't previous played, fresh guess arrays
         currentGuesses = Array(NUMBER_OF_WORDS);
         
@@ -710,6 +720,7 @@ function setCookie () {
     cookieObject.guesses = JSON.stringify(currentGuesses);
     cookieObject.hints = JSON.stringify(currentHints);
     cookieObject.timers = JSON.stringify(currentTimers);
+    cookieObject.totaltime = totalTimer;
     cookieObject.win = gameOver;
     let jsonObject = JSON.stringify(cookieObject);
     
