@@ -34,7 +34,7 @@
     </div>
     <div id="archive">
         <div id="archive-text">
-            <b>Select a previous game</b>
+            <b>Select a puzzle</b>
             <div id="archive-scroll">
                 <div class="archive-entry">Loading...</div>
             </div>
@@ -50,6 +50,9 @@
         </div>
         <div>
             <button id="share-button" class="keyboard-button">Share results</button>
+        </div>
+        <div>
+            Play <span id="play-more-games">previous puzzles</span>.
         </div>
     </div>
     <div id="game-container">

@@ -1250,3 +1250,8 @@ document.getElementById("start-button").addEventListener("click", (e) => {
 document.getElementById("logo-cont").addEventListener("click", (e) => {   
     showArchive();
 })
+
+// attach archive window to share box
+document.getElementById("play-more-games").addEventListener("click", (e) => {   
+    showArchive();
+})

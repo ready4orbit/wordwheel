@@ -125,13 +125,21 @@ body {
     border: 1px solid #000000;
     border-radius: 5px;
     
-    padding: 3rem;
+    padding: 2.2rem;
     text-align: center;
 }
 
 #you-win button {
     margin-top: 1rem;
+    margin-bottom: 1rem;
     background-color: #c4ebc6;
+}
+
+#play-more-games {
+    text-decoration: underline;
+    cursor: pointer;
+    color: #000000;
+    font-weight: bold;
 }
 
 #game-container {
