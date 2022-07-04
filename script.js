@@ -1,16 +1,6 @@
-/**
-How to test on a local server
-
-Go to Teminal and type
-
-cd Documents/Web
-
-then
-
-python3 -m http.server
-
-You should then be able to access at http://localhost:8000
-**/
+// Word Wheel
+// created by Drew Gomez 
+// copyright 2022 - present
 
 // set some variables
 let WORDS = [];
@@ -944,7 +934,7 @@ function showArchive () {
         }
     })
     
-    let delay = 1000
+    let delay = 800
     setTimeout(()=> {
         // after short delay, load previous games
         archiveEntryLoad ();
@@ -952,6 +942,19 @@ function showArchive () {
 }
 
 function archiveEntryLoad () {
+    // function to calculate how far back to go to reach 2022-06-04 (first puzzle)
+    function dateDifference () {
+        let date_1 = new Date('06/04/2022'); // date of first puzzle
+        let date_2 = new Date();
+
+        let difference = date_2.getTime() - date_1.getTime();
+        let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));
+        return TotalDays;
+    }
+    
+    let rewindAmount = dateDifference();
+    console.log('rewindAmount ' + rewindAmount)
+    
     // function to load previous games
     let archiveScroll = document.getElementById('archive-scroll');
     function highlightDate (thisEntry) {
@@ -971,7 +974,7 @@ function archiveEntryLoad () {
     
     // load the list of previous games for last 365 days
     let archiveEntries = document.createElement("div")
-    for (let i = 0; i < 365; i++) {
+    for (let i = 0; i < rewindAmount; i++) {
         var dateOffset = (24*60*60*1000) * i; //i days back
         let newDate = new Date();
         newDate.setTime(newDate.getTime() - dateOffset);
@@ -1031,9 +1034,6 @@ function archiveEntryLoad () {
             })
             
             archiveEntries.appendChild(archiveEntry)
-        } else {
-            // no more games, end list
-            i = 365;
         }
     }
     
