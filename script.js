@@ -28,6 +28,7 @@ let totalTimer = 0;
 let thisLetter = 0;
 let curClue = 0;
 let loadGame = '';
+let rewindAmount = dateDifference();
 
 // div elements
 let timerObj = document.getElementById("hint-timer");
@@ -45,7 +46,7 @@ function gameButton() {
 function gameLoader() {
     // starting with today's date, iterate back until you find a game file that exists and load it
     let gameLoaded = false;
-    for (let i = 0; gameLoaded == false && i < 100; i++) {
+    for (let i = 0; gameLoaded == false && i < rewindAmount; i++) {
         var dateOffset = (24*60*60*1000) * i; //i days back
         let newDate = thisDate;
         newDate.setTime(thisDate.getTime() - dateOffset);
@@ -941,20 +942,17 @@ function showArchive () {
     }, delay)
 }
 
-function archiveEntryLoad () {
-    // function to calculate how far back to go to reach 2022-06-04 (first puzzle)
-    function dateDifference () {
-        let date_1 = new Date('06/04/2022'); // date of first puzzle
-        let date_2 = new Date();
+// function to calculate how far back to go to reach 2022-06-04 (first puzzle)
+function dateDifference () {
+    let date_1 = new Date('06/04/2022'); // date of first puzzle
+    let date_2 = new Date();
 
-        let difference = date_2.getTime() - date_1.getTime();
-        let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));
-        return TotalDays;
-    }
-    
-    let rewindAmount = dateDifference();
-    console.log('rewindAmount ' + rewindAmount)
-    
+    let difference = date_2.getTime() - date_1.getTime();
+    let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));
+    return TotalDays;
+}
+
+function archiveEntryLoad () {
     // function to load previous games
     let archiveScroll = document.getElementById('archive-scroll');
     function highlightDate (thisEntry) {
@@ -983,8 +981,6 @@ function archiveEntryLoad () {
         let fileName = 'games/' + readableDate(newDate) + '.json';
         
         // See if the file exists
-        
-        
         if(checkFileExist(fileName)){
             // if so add item to list
             
@@ -1255,3 +1251,6 @@ document.getElementById("logo-cont").addEventListener("click", (e) => {
 document.getElementById("play-more-games").addEventListener("click", (e) => {   
     showArchive();
 })
+
+document.getElementById("start-button").innerHTML = "Start Game";
+document.getElementById("start-button").style.backgroundColor = correctBG;

@@ -29,7 +29,7 @@
             <br/><br/>
         </div>
         <div>
-            <button id="start-button" class="keyboard-button">Start Game</button>
+            <button id="start-button" class="keyboard-button">. . Loading . .</button>
         </div>
     </div>
     <div id="archive">
