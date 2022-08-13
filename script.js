@@ -1197,6 +1197,11 @@ function allListeners() {
                 nextWord()
                 return
             }
+            
+            if (pressedKey === "Enter") {
+                nextWord()
+                return
+            }
 
             let found = pressedKey.match(/[a-z]/gi)
             if (!found || found.length > 1) {
@@ -1209,11 +1214,12 @@ function allListeners() {
 
     document.getElementById("keyboard-cont").addEventListener("click", (e) => {
         const target = e.target
-
+        
         if (target.tagName != 'BUTTON') {
             return
         }
         let key = target.textContent
+        console.log(key)
         
         if (key === "Del") {
             key = "Backspace"
