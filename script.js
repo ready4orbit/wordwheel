@@ -345,6 +345,7 @@ function colorBoxandLine () {
     for (let i = 0; i < row.children.length; i++) {
         // read box contents
         let box = row.children[i]
+        box.classList.remove("active-box")
         
         // if it's a hint letter, make it hint colored
         if (currentHints[curClue][i] == 'h') {
@@ -409,7 +410,14 @@ function colorBoxandLine () {
                 } else {
                     // if the box IS blank, set line and box color
                     box.classList.remove("filled-box")
-
+                    
+                    // if active letter, highlight
+                    if (i == thisLetter) {
+                        box.classList.add("active-box")
+                    } else {
+                        box.classList.remove("active-box")
+                    }
+                    
                     // if first box, change left line color
                     if (i == 0) { 
                         setLineColor('left', inactiveLine) 
@@ -592,9 +600,6 @@ function insertLetter (pressedKey) {
         
         //check if all the guesses are correct
         checkGuesses()
-
-        // color game board
-        colorBoxandLine()
         
         // go to next letter, skip any hint letters
         thisLetter += 1
@@ -602,6 +607,9 @@ function insertLetter (pressedKey) {
         while (hintGuide[thisLetter] == 'h') { // skip hints
             thisLetter += 1
         }
+        
+        // color game board
+        colorBoxandLine()
         
         // if correct word, go to next clue
         if (currentGuess == WORDS[curClue]) {
@@ -677,12 +685,12 @@ function deleteLetter () {
 
         // add to the guesses array
         logGuess()
-
-        // color game board
-        colorBoxandLine()
         
         // go to previous letter
         thisLetter -= 1
+        
+        // color game board
+        colorBoxandLine()
     }
 }
 
@@ -1185,7 +1193,7 @@ function allListeners() {
                 return
             }
 
-            if (pressedKey === "Enter") {
+            if (pressedKey === "Next") {
                 nextWord()
                 return
             }
@@ -1206,13 +1214,13 @@ function allListeners() {
             return
         }
         let key = target.textContent
-
+        
         if (key === "Del") {
             key = "Backspace"
         }
 
-        if (key === "Ent") {
-            key = "Return"
+        if (key === "↩") {
+            key = "Next"
         }
 
         document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}))

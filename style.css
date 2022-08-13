@@ -231,7 +231,7 @@ body {
 }
 
 .letter-box {
-    border: 2px solid gray;
+    border: 2px solid #808080;
     border-radius: 3px;
     font-weight: 700;
     display: flex;
@@ -273,6 +273,10 @@ body {
 
 .filled-box {
     border: 2px solid black;
+}
+
+.active-box {
+    animation:blinkingActiveBox 1s infinite;
 }
 
 .correct-box {
@@ -358,6 +362,15 @@ button {
     60%{    opacity: 0; }
     99%{    opacity: 0; }
     100%{   opacity: 1; }
+}
+
+@keyframes blinkingActiveBox{
+    0%{     border: 2px solid #808080; }
+    24%{     border: 2px solid #808080; }
+    25%{    border: 2px solid #000000; }
+    49%{    border: 2px solid #000000; }
+    50%{   border: 2px solid #808080; }
+    100%{   border: 2px solid #808080; }
 }
 
 #keyboard-cont {    
