@@ -196,7 +196,6 @@ function initBoard() {
     
     // write date
     document.getElementById('game-date').innerHTML = displayDate;
-
     
     // function to create the visible word and clue based on a clue #
     // create a human readable version of the number
@@ -216,6 +215,9 @@ function initBoard() {
         // otherwise set universal variable blank
         currentGuess = '';
     }
+    
+    // apply any hint letters to the guess
+    applyHints()
     
     //reset gameboard
     board.innerHTML = ""; 
@@ -532,7 +534,6 @@ function insertLetter (pressedKey) {
         maxLetter = WORDS[curClue].length - 1;
     }
     
-    console.log('maxletter: '+maxLetter)
     // add letter if not at end of word
     if (thisLetter < maxLetter) {
         // identify the letter pressed
@@ -881,6 +882,35 @@ function slideInClue(slideDir) {
                 gameInterval = setInterval(gameTimer, 1000);
             }
         }, delay)
+    }
+}
+
+function applyHints() {
+    // go through hint array and add hint letter to guess
+    for (let i = 1; i < WORDS[curClue].length - 1; i++) {
+        if (currentHints[curClue][i] == 'h') { // check if it's a hint letter
+            let hintPosition = i;
+            let hintLetter = WORDS[curClue][hintPosition];
+
+            // iterate through each letter of the word, to create a placeholder word with spaces, or existing letters if there are already hints
+            let updatedGuess = '';
+
+            for (let i = 0; i < WORDS[curClue].length; i++) {        
+                if (currentGuess[i] != undefined) {
+                    updatedGuess = updatedGuess.concat(currentGuess[i]);
+                } else { // add a space
+                    updatedGuess = updatedGuess.concat(' ');
+                }
+            }
+
+            // add hint letter to guess array
+            updatedGuess = updatedGuess.substr(0, hintPosition).concat(hintLetter,updatedGuess.substr(hintPosition + 1))
+            currentGuess = updatedGuess;
+            currentGuesses.splice(curClue, 1, currentGuess);
+
+            // update cookies
+            setCookie();
+        }
     }
 }
 
