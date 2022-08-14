@@ -518,8 +518,23 @@ function insertLetter (pressedKey) {
     let spacer = ' ';
     pressedKey = pressedKey.toLowerCase()
     
+    // determine next clue number
+    let nextClue = curClue + 1;
+    if (nextClue >= NUMBER_OF_WORDS) {
+        nextClue = 0;
+    }
+    
+    // determine last possible letter to add
+    // if next word is correct, last possible letter is second from last in word
+    let maxLetter = WORDS[curClue].length;
+    if (currentGuesses[nextClue] == WORDS[nextClue]) {
+        // you can only add up to second to last letter
+        maxLetter = WORDS[curClue].length - 1;
+    }
+    
+    console.log('maxletter: '+maxLetter)
     // add letter if not at end of word
-    if (thisLetter < WORDS[curClue].length) {
+    if (thisLetter < maxLetter) {
         // identify the letter pressed
         let row = document.getElementsByClassName("letter-row")[0]
         let box = row.children[thisLetter]
@@ -577,12 +592,6 @@ function insertLetter (pressedKey) {
 
         // if this is the last letter, add to the beginning of the next word
         if (thisLetter == WORDS[curClue].length - 1) {
-            // identify the next word
-            let nextClue = curClue + 1;
-            if (nextClue >= NUMBER_OF_WORDS) {
-                nextClue = 0;
-            }
-            
             // if next guess if undefined, make it, other add it
             if (currentGuesses[nextClue] == undefined) {
                 currentGuesses.splice(nextClue, 1, pressedKey);
@@ -627,6 +636,20 @@ function deleteLetter () {
     if (currentGuesses[curClue] != WORDS[curClue]) {
         // delete letter if not already at beginning of word
         if (thisLetter > 0) {
+            // create next clue number
+            let nextClue = curClue + 1;
+            if (nextClue >= NUMBER_OF_WORDS) {
+                nextClue = 0;
+            }
+            
+            // if it's the last letter, check if next word if solved, if so go back one more letter (don't delete correct letter)
+            if (thisLetter === WORDS[curClue].length) {
+                if (currentGuesses[nextClue] == WORDS[nextClue]) {
+                    // go to previous letter
+                    thisLetter -= 1
+                }
+            }
+            
             // if it's a hint letter, go back one more
             let hintGuide = currentHints[curClue]
             while (hintGuide[thisLetter - 1] == 'h') { // skip hints
@@ -681,11 +704,6 @@ function deleteLetter () {
 
                 // if deleting the last letter, delete the first letter of the next word
                 if (thisLetter === WORDS[curClue].length) {
-                    let nextClue = curClue + 1;
-                    if (nextClue >= NUMBER_OF_WORDS) {
-                        nextClue = 0;
-                    }
-
                     // if next guess if undefined
                     if (currentGuesses[nextClue] == undefined) {
                         // if undefined, just leave blank - shouldn't ever happen
