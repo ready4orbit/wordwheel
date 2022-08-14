@@ -518,10 +518,8 @@ function insertLetter (pressedKey) {
     let spacer = ' ';
     pressedKey = pressedKey.toLowerCase()
     
-    // if already at the end of the word, skip everything and go to next word
-    if (thisLetter == WORDS[curClue].length) {
-        nextWord()
-    } else { // if not, add letter
+    // add letter if not at end of word
+    if (thisLetter < WORDS[curClue].length) {
         // identify the letter pressed
         let row = document.getElementsByClassName("letter-row")[0]
         let box = row.children[thisLetter]
@@ -625,72 +623,92 @@ function insertLetter (pressedKey) {
 function deleteLetter () {
     let spacer = ' ';
     
-    // if we're already at the beginning, go to previous word
-    if (thisLetter === 0) {
-        prevWord()
-        return;
-    } else {
-        // if it's a hint letter, go back one more
-        let hintGuide = currentHints[curClue]
-        while (hintGuide[thisLetter - 1] == 'h') { // skip hints
-            thisLetter -= 1
+    // only delete is word isn't solved
+    if (currentGuesses[curClue] != WORDS[curClue]) {
+        // delete letter if not already at beginning of word
+        if (thisLetter > 0) {
+            // if it's a hint letter, go back one more
+            let hintGuide = currentHints[curClue]
+            while (hintGuide[thisLetter - 1] == 'h') { // skip hints
+                thisLetter -= 1
+            }
+
+            // if it's the second letter, check if the prev word is green before deleting first letter
+            let isGreen = false
+            if (thisLetter == 1) {
+                // create previous guess #
+                let prevClue = curClue - 1;
+                if (prevClue < 0) {
+                    prevClue = WORDS.length - 1;
+                }
+
+                // if previous word correct, set boolian
+                if (currentGuesses[prevClue] == WORDS[prevClue]) {
+                    isGreen = true
+                } else {
+                    isGreen = false
+                }
+            }
+
+            // if isn't a green box, delete
+            if (!isGreen) {
+                // delete letter from guesses
+                let row = document.getElementsByClassName("letter-row")[0]
+                let box = row.children[thisLetter - 1]
+                box.textContent = ""
+
+                // remove letter at active position    
+                currentGuess = currentGuess.substr(0, thisLetter - 1).concat(" ", currentGuess.substr(thisLetter)) 
+
+                // if deleting the first letter, remove the last letter of the previous word
+                if (thisLetter == 1) {
+                    let prevClue = curClue - 1;
+                    if (prevClue < 0) {
+                        prevClue = WORDS.length - 1;
+                    }
+
+
+                    // if previous guess if undefined, add a blank entry
+                    if (currentGuesses[prevClue] == undefined) {
+                        let prevGuess = '';
+
+                        currentGuesses.splice(prevClue, 1, prevGuess);
+                    } else { // if there is a guess, delete last letter
+                        let trimmedGuess = currentGuesses[prevClue].substring(0, currentGuesses[prevClue].length - 1)
+                        currentGuesses.splice(prevClue, 1, trimmedGuess);
+                    }
+                }
+
+                // if deleting the last letter, delete the first letter of the next word
+                if (thisLetter === WORDS[curClue].length) {
+                    let nextClue = curClue + 1;
+                    if (nextClue >= NUMBER_OF_WORDS) {
+                        nextClue = 0;
+                    }
+
+                    // if next guess if undefined
+                    if (currentGuesses[nextClue] == undefined) {
+                        // if undefined, just leave blank - shouldn't ever happen
+                        currentGuesses.splice(nextClue, 1, '');
+                    } else {
+                        // if not blank, cut first letter and add a spacer
+                        let nextGuess = spacer.concat(currentGuesses[nextClue].slice(1));
+
+                        currentGuesses.splice(nextClue, 1, nextGuess);
+                    }
+                }
+
+
+                // add to the guesses array
+                logGuess()
+
+                // go to previous letter
+                thisLetter -= 1
+
+                // color game board
+                colorBoxandLine()
+            }
         }
-        
-        // delete letter from guesses
-        let row = document.getElementsByClassName("letter-row")[0]
-        let box = row.children[thisLetter - 1]
-        box.textContent = ""
-        
-        // remove letter at active position    
-        currentGuess = currentGuess.substr(0, thisLetter - 1).concat(" ", currentGuess.substr(thisLetter)) 
-        
-        // if deleting the first letter, remove the last letter of the previous word
-        if (thisLetter == 1) {
-            let prevClue = curClue - 1;
-            if (prevClue < 0) {
-                prevClue = WORDS.length - 1;
-            }
-
-
-            // if previous guess if undefined, add a blank entry
-            if (currentGuesses[prevClue] == undefined) {
-                let prevGuess = '';
-
-                currentGuesses.splice(prevClue, 1, prevGuess);
-            } else { // if there is a guess, delete last letter
-                let trimmedGuess = currentGuesses[prevClue].substring(0, currentGuesses[prevClue].length - 1)
-                currentGuesses.splice(prevClue, 1, trimmedGuess);
-            }
-        }
-
-        // if deleting the last letter, delete the first letter of the next word
-        if (thisLetter === WORDS[curClue].length) {
-            let nextClue = curClue + 1;
-            if (nextClue >= NUMBER_OF_WORDS) {
-                nextClue = 0;
-            }
-
-            // if next guess if undefined
-            if (currentGuesses[nextClue] == undefined) {
-                // if undefined, just leave blank - shouldn't ever happen
-                currentGuesses.splice(nextClue, 1, '');
-            } else {
-                // if not blank, cut first letter and add a spacer
-                let nextGuess = spacer.concat(currentGuesses[nextClue].slice(1));
-
-                currentGuesses.splice(nextClue, 1, nextGuess);
-            }
-        }
-           
-
-        // add to the guesses array
-        logGuess()
-        
-        // go to previous letter
-        thisLetter -= 1
-        
-        // color game board
-        colorBoxandLine()
     }
 }
 
@@ -1225,7 +1243,7 @@ function allListeners() {
             key = "Backspace"
         }
 
-        if (key === "↩") {
+        if (key === "➔") {
             key = "Next"
         }
 
