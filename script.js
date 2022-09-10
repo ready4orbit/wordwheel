@@ -1044,67 +1044,69 @@ function archiveEntryLoad () {
         }
     }
     
-    // load the list of previous games for last 365 days
     let archiveEntries = document.createElement("div")
-    for (let i = 0; i < rewindAmount; i++) {
-        var dateOffset = (24*60*60*1000) * i; //i days back
-        let newDate = new Date();
-        newDate.setTime(newDate.getTime() - dateOffset);
+    
+    // load the list of previous games going back to 2022-06-04
+    var start = new Date("06/04/2022");
+    var end = new Date();
+
+
+    var loop = new Date(end);
+    while(start <= loop){
+        var newDate = loop;
         
         // create file name
         let fileName = 'games/' + readableDate(newDate) + '.json';
         
-        // See if the file exists
-        if(checkFileExist(fileName)){
-            // if so add item to list
-            
-            let archiveEntry = document.createElement("div")
-            archiveEntry.className = "archive-entry"
-            archiveEntry.id = readableDate(newDate);
-            
-            // see if there is a cookie for that date
-            let data = getCookieValue(readableDate(newDate));
-            if (data != '') { // if there is a cookie for this date
-                if (data.substring(0,1) == "=") {
-                    // trim first character
-                    data = data.substring(1);
-                }
-                var cookieObj = JSON.parse(data);
+        // add item to list
+        let archiveEntry = document.createElement("div")
+        archiveEntry.className = "archive-entry"
+        archiveEntry.id = readableDate(newDate);
 
-                // load game date
-                let gamewin = false;
-                if (cookieObj.win != undefined) {
-                    gamewin = cookieObj.win;
-                }
-                
-                
-                // is gamewin is true, indicate finished game, otherwise, indicate incomplete
-                if (gamewin) {
-                    // indicate won game
-                    let entryStyle = 'archive-entry-win'
-                    archiveEntry.classList.add(entryStyle);
-                } else {
-                    // indicate incomplete game
-                    let entryStyle = 'archive-entry-incomplete'
-                    archiveEntry.classList.add(entryStyle);
-                }
+        // see if there is a cookie for that date
+        let data = getCookieValue(readableDate(newDate));
+        if (data != '') { // if there is a cookie for this date
+            if (data.substring(0,1) == "=") {
+                // trim first character
+                data = data.substring(1);
+            }
+            var cookieObj = JSON.parse(data);
+
+            // load game date
+            let gamewin = false;
+            if (cookieObj.win != undefined) {
+                gamewin = cookieObj.win;
+            }
+
+
+            // is gamewin is true, indicate finished game, otherwise, indicate incomplete
+            if (gamewin) {
+                // indicate won game
+                let entryStyle = 'archive-entry-win'
+                archiveEntry.classList.add(entryStyle);
             } else {
-                let entryStyle = 'archive-entry-unstarted'
+                // indicate incomplete game
+                let entryStyle = 'archive-entry-incomplete'
                 archiveEntry.classList.add(entryStyle);
             }
-            
-            // create a "Jul 2, 2021" date
-            let displayDate = newDate.toLocaleDateString('en-us', { weekday:"short", year:"numeric", month:"short", day:"numeric"}).substring(0, 3).concat(newDate.toLocaleDateString('en-us', { weekday:"short", year:"numeric", month:"short", day:"numeric"}).substring(4));
-            archiveEntry.textContent = displayDate;
-            
-            // attach listener to load date
-            archiveEntry.addEventListener("click", (e) => {
-                loadGame = archiveEntry.id;
-                highlightDate(archiveEntry.id);
-            })
-            
-            archiveEntries.appendChild(archiveEntry)
+        } else {
+            let entryStyle = 'archive-entry-unstarted'
+            archiveEntry.classList.add(entryStyle);
         }
+
+        // create a "Jul 2, 2021" date
+        let displayDate = newDate.toLocaleDateString('en-us', { weekday:"short", year:"numeric", month:"short", day:"numeric"}).substring(0, 3).concat(newDate.toLocaleDateString('en-us', { weekday:"short", year:"numeric", month:"short", day:"numeric"}).substring(4));
+        archiveEntry.textContent = displayDate;
+
+        // attach listener to load date
+        archiveEntry.addEventListener("click", (e) => {
+            loadGame = archiveEntry.id;
+            highlightDate(archiveEntry.id);
+        })
+
+        archiveEntries.appendChild(archiveEntry)
+        
+        loop.setDate(loop.getDate() - 1);
     }
     
     // append list to scroll
