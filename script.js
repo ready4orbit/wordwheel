@@ -29,6 +29,7 @@ let thisLetter = 0;
 let curClue = 0;
 let loadGame = '';
 let rewindAmount = dateDifference();
+let enableInput = true; // control keyboard input during hints
 
 // div elements
 let timerObj = document.getElementById("hint-timer");
@@ -146,8 +147,6 @@ function loadCookie () {
             if (cookieObj.totaltime) {
                 let cookieTotalTime = cookieObj.totaltime;
                 totalTimer = cookieTotalTime;
-                
-                console.log(totalTimer);
             } else {
                 totalTimer = 0;
             }
@@ -914,7 +913,8 @@ function applyHints() {
     }
 }
 
-function generateHint() {    
+function generateHint() {
+    enableInput = false; // disable input while generating hints
     let availableHints = [];
     
     // iterate through hint guide from second letter to second to last
@@ -958,6 +958,8 @@ function generateHint() {
         
         initBoard();
     }
+    
+    enableInput = true; // re-enable input after hint generated
 }
 
 function checkGuesses () {
@@ -1242,40 +1244,42 @@ function checkFileExist(urlToFile) {
 
 function allListeners() {
     document.addEventListener("keyup", (e) => {
-        let pressedKey = String(e.key)
-        
-        if (pressedKey === "ArrowLeft") {
-            prevWord()
-            return
-        }
+        if (enableInput) { // if input is enabled
+            let pressedKey = String(e.key)
 
-        if (pressedKey === "ArrowRight") {
-            nextWord()
-            return
-        }
-
-        if (gameOver == false) {
-
-            if (pressedKey === "Backspace") {
-                deleteLetter()
+            if (pressedKey === "ArrowLeft") {
+                prevWord()
                 return
             }
 
-            if (pressedKey === "Next") {
-                nextWord()
-                return
-            }
-            
-            if (pressedKey === "Enter") {
+            if (pressedKey === "ArrowRight") {
                 nextWord()
                 return
             }
 
-            let found = pressedKey.match(/[a-z]/gi)
-            if (!found || found.length > 1) {
-                return
-            } else {
-                insertLetter(pressedKey)
+            if (gameOver == false) {
+
+                if (pressedKey === "Backspace") {
+                    deleteLetter()
+                    return
+                }
+
+                if (pressedKey === "Next") {
+                    nextWord()
+                    return
+                }
+
+                if (pressedKey === "Enter") {
+                    nextWord()
+                    return
+                }
+
+                let found = pressedKey.match(/[a-z]/gi)
+                if (!found || found.length > 1) {
+                    return
+                } else {
+                    insertLetter(pressedKey)
+                }
             }
         }
     })
@@ -1287,7 +1291,7 @@ function allListeners() {
             return
         }
         let key = target.textContent
-        console.log(key)
+        //console.log(key)
         
         if (key === "Del") {
             key = "Backspace"
@@ -1305,8 +1309,10 @@ function allListeners() {
     let touchendX = 0
 
     function handleGesture() {
-      if (touchendX < touchstartX) nextWord()
-      if (touchendX > touchstartX) prevWord()
+        if (enableInput) { // if input is enabled
+            if (touchendX < touchstartX) nextWord()
+            if (touchendX > touchstartX) prevWord()
+        }
     }
 
     document.getElementById("game-board").addEventListener('touchstart', e => {
