@@ -52,7 +52,7 @@
             <button id="share-button" class="keyboard-button">Share results</button>
         </div>
         <div>
-            Play <span id="play-more-games">previous puzzles</span>.
+            Play <span id="play-more-games">again?</span> 🤔
         </div>
     </div>
     <div id="game-container">
