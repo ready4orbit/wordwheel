@@ -1011,11 +1011,7 @@ function showArchive () {
         }
     })
     
-    let delay = 800
-    setTimeout(()=> {
-        // after short delay, load previous games
-        archiveEntryLoad ();
-    }, delay)
+    archiveEntryLoad ();
 }
 
 // function to calculate how far back to go to reach 2022-06-04 (first puzzle)
@@ -1114,6 +1110,18 @@ function archiveEntryLoad () {
     // append list to scroll
     archiveScroll.innerHTML = '';
     archiveScroll.appendChild(archiveEntries)
+}
+
+function loadRandomGame() {
+    // load a random game between now and 06-04-2022
+    let start = new Date('06/04/2022');
+    let end = new Date();
+    let randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+    
+    // set loadgame variable to this date
+    loadGame = readableDate(randomDate);
+    
+    loadArchive();
 }
 
 function loadArchive () {
@@ -1330,6 +1338,11 @@ document.getElementById("start-button").addEventListener("click", (e) => {
     gameButton();
 })
 
+// attach boot up RANDOM game function to random button
+document.getElementById("random-button").addEventListener("click", (e) => {   
+    loadRandomGame();
+})
+
 // attach archive window to logo
 document.getElementById("logo-cont").addEventListener("click", (e) => {   
     showArchive();
@@ -1340,5 +1353,6 @@ document.getElementById("play-more-games").addEventListener("click", (e) => {
     showArchive();
 })
 
-document.getElementById("start-button").innerHTML = "Start Game";
+document.getElementById("start-button").innerHTML = "Today's game 🗓";
+document.getElementById("random-button").innerHTML = "Random game 🤪";
 document.getElementById("start-button").style.backgroundColor = correctBG;

@@ -30,6 +30,7 @@
         </div>
         <div>
             <button id="start-button" class="keyboard-button">. . Loading . .</button>
+            <button id="random-button" class="keyboard-button">. . Loading . .</button>
         </div>
     </div>
     <div id="archive">
@@ -52,7 +53,7 @@
             <button id="share-button" class="keyboard-button">Share results</button>
         </div>
         <div>
-            Play <span id="play-more-games">again?</span> 🤔
+            Play <span id="play-more-games">another?</span> 🤔
         </div>
     </div>
     <div id="game-container">
