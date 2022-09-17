@@ -111,6 +111,6 @@
         </div>
     </div>
     
-    <script src="script.js" type="module"></script>
+    <script src="script.js?v2" type="module"></script>
 </body>
 </html>
