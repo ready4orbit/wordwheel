@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WordWheel</title>
     
-    <link rel="stylesheet" href="style.css?v2">
+    <link rel="stylesheet" href="style.css?v3">
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-T31948700P"></script>
@@ -43,6 +43,9 @@
         <div>
             <button id="archive-load" class="keyboard-button archive-load">Load</button>
             <button id="archive-cancel" class="keyboard-button">Cancel</button>
+        </div>
+        <div>
+            <b>Or</b> <button id="archive-random" class="keyboard-button">Play random 🤪</button>
         </div>
     </div>
     <div id="you-win">
@@ -111,6 +114,6 @@
         </div>
     </div>
     
-    <script src="script.js?v2" type="module"></script>
+    <script src="script.js?v3" type="module"></script>
 </body>
 </html>

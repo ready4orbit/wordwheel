@@ -1343,6 +1343,10 @@ document.getElementById("random-button").addEventListener("click", (e) => {
     loadRandomGame();
 })
 
+document.getElementById("archive-random").addEventListener("click", (e) => {   
+    loadRandomGame();
+})
+
 // attach archive window to logo
 document.getElementById("logo-cont").addEventListener("click", (e) => {   
     showArchive();
