@@ -114,6 +114,6 @@
         </div>
     </div>
     
-    <script src="script.js?v3" type="module"></script>
+    <script src="script.js?v4" type="module"></script>
 </body>
 </html>

@@ -272,6 +272,42 @@ function initBoard() {
             box.style.marginRight = "4px"
         }
         
+        // if first letter:
+        // check if the previous word is right and set that letter if so
+        if (j == 0) { // first letter
+            // create previous guess #
+            let prevClue = curClue - 1;
+            if (prevClue < 0) {
+                prevClue = WORDS.length - 1;
+            }
+
+            // if previous word correct, set letter
+            if (currentGuesses[prevClue] == WORDS[prevClue]) {
+                // concat prev word letter onto current guess
+                currentGuess = WORDS[prevClue].slice(-1).concat(currentGuess.slice(1));
+                
+                currentGuesses.splice(curClue, 1, currentGuess);
+            }
+        }
+        
+        // if last letter:
+        // check if the next word is right and set that letter if so
+        if (j == WORDS[curClue].length - 1) { // last letter
+            // create next guess #
+            let nextClue = curClue + 1;
+            if (nextClue >= NUMBER_OF_WORDS) {
+                nextClue = 0;
+            }
+
+            // if next word correct, set letter
+            if (currentGuesses[nextClue] == WORDS[nextClue]) {
+                // concat next word letter onto current guess
+                currentGuess = currentGuess.slice(0, WORDS[curClue].length - 1).concat(WORDS[nextClue].slice(0,1));
+                
+                currentGuesses.splice(curClue, 1, currentGuess);
+            }
+        }
+        
         // check if there is a guess already and fill the box with the guess
         if (currentGuess[j] != '' && currentGuess[j] != undefined) {
             // add letter if there is already a guess letter
@@ -963,7 +999,6 @@ function generateHint() {
 }
 
 function checkGuesses () {
-    
     // does the current guess match the current word
     if (currentGuess == WORDS[curClue]) {
         //check all words        
