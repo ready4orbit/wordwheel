@@ -207,9 +207,11 @@ function initBoard() {
     thisLetter = 0;
     
     // check if there is a guess already and set universal variable
-    if (currentGuesses[curClue] != '' && currentGuesses[curClue] != undefined) {
+    if (currentGuesses[curClue] != '' && currentGuesses[curClue] != undefined) {    
         // if it's not empty or undefined, set the universal variable to the previous entry
-        currentGuess = currentGuesses[curClue]
+        // Check if guess is longer than the answer and trim down to the length of the answer
+        
+        currentGuess = currentGuesses[curClue].slice(0, WORDS[curClue].length)
     } else {
         // otherwise set universal variable blank
         currentGuess = '';
