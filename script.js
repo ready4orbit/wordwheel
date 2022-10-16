@@ -1227,13 +1227,13 @@ function youWin() {
             navigator.share({
                 title: 'WordWheel',
                 text: shareText,
-                url: 'https://word-wheel.herokuapp.com'
+                url: 'https://www.wordwheel.app'
             })
             .then(() => console.log('Share was successful.'))
             .catch((error) => console.log('Sharing failed', error));
         } else {
             // fallback of just copy to clipboard
-            navigator.clipboard.writeText(shareText.concat('https://word-wheel.herokuapp.com'));
+            navigator.clipboard.writeText(shareText.concat('https://www.wordwheel.app'));
 
             document.getElementById('you-win-text').textContent = 'Copied to clipboard';
         }
