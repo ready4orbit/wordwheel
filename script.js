@@ -797,9 +797,9 @@ function setCookie () {
     cookieObject.win = gameOver;
     let jsonObject = JSON.stringify(cookieObject);
     
-    // create expiration date 10 years in the future
+    // create expiration date 60 days in the future
     const futureDate = new Date();
-    futureDate.setTime(futureDate.getTime() + (10*365*24*60*60*1000));    
+    futureDate.setTime(futureDate.getTime() + (60*24*60*60*1000));    
     let cookieExpiry = 'expires='.concat(futureDate.toUTCString())
     
     // add it all together, named after this game date
