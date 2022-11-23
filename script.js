@@ -45,6 +45,9 @@ function gameButton() {
 
 // check if there is a game and load it, or start a new one
 function gameLoader() {
+    // delete extra cookies to free up space
+    clearoldCookies();
+    
     // starting with today's date, iterate back until you find a game file that exists and load it
     let gameLoaded = false;
     for (let i = 0; gameLoaded == false && i < rewindAmount; i++) {
@@ -71,6 +74,43 @@ function gameLoader() {
                 })
                 .catch(console.error);
         }
+    }
+}
+
+// delete any cookies more than X DEBUG
+function clearoldCookies() {    
+    // load the list of previous games going back to 2022-06-04
+    var start = new Date("06/04/2022");
+    var end = new Date();
+
+
+    var loop = new Date(end);
+    var j = 0;
+    
+    while(start <= loop){
+        var newDate = loop;
+        
+        // see if there is a cookie for that date
+        let data = getCookieValue(readableDate(newDate));
+        if (data != '') { // if there is a cookie for this date
+            // iterate up counter
+            j++;
+            
+            // if counter >=30 delete cookie
+            if (j >= 30 && thisDate != readableDate(newDate)) {
+                // delete cookie
+                // create expiration date in the past  
+                let cookieExpiry = 'expires=Thu, 01 Jan 1970 00:00:01 GMT'
+
+                // add it all together, named after this game date
+                let fullCookie = readableDate(newDate).concat('=0;', cookieExpiry, ';', 'SameSite=Strict', ';')
+
+                // set/update cookie
+                document.cookie = fullCookie
+            }
+        }
+        
+        loop.setDate(loop.getDate() - 1);
     }
 }
 
@@ -799,7 +839,7 @@ function setCookie () {
     
     // create expiration date 60 days in the future
     const futureDate = new Date();
-    futureDate.setTime(futureDate.getTime() + (30*24*60*60*1000));    
+    futureDate.setTime(futureDate.getTime() + (60*24*60*60*1000));    
     let cookieExpiry = 'expires='.concat(futureDate.toUTCString())
     
     // add it all together, named after this game date
