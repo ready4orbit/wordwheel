@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WordWheel</title>
     
-    <link rel="stylesheet" id="stylesheet" href="style2.css?v10">
+    <link rel="stylesheet" id="stylesheet" href="style.css?v10">
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-T31948700P"></script>
