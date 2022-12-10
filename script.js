@@ -26,8 +26,8 @@ let rewindAmount = dateDifference();
 let enableInput = true; // control keyboard input during hints
 
 // style
-let lightMode_css = "style.css?v10";
-let darkMode_css = "style_dark.css?v10";
+let lightMode_css = "style.css?v11";
+let darkMode_css = "style_dark.css?v11";
 
 // div elements
 let timerObj = document.getElementById("hint-timer");

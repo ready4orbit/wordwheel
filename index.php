@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WordWheel</title>
     
-    <link rel="stylesheet" id="stylesheet" href="style.css?v10">
-    <link rel="preload" id="stylesheet" href="style_dark.css?v10">
+    <link rel="stylesheet" id="stylesheet" href="style.css?v11">
+    <link rel="preload" id="stylesheet" href="style_dark.css?v11">
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-T31948700P"></script>
@@ -75,7 +75,7 @@
                     <div id="progress-bar">
                     </div>
                     <div class="tool-item">
-                        <button id="hint-timer" class="tool-button">15</button>
+                        <button id="hint-timer" class="hint-timer tool-button">15</button>
                     </div>
                 </div>
                 <div class="first-row">
