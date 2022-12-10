@@ -26,7 +26,7 @@ let rewindAmount = dateDifference();
 let enableInput = true; // control keyboard input during hints
 
 // style
-let lightMode_css = "style2.css?v10";
+let lightMode_css = "style.css?v10";
 let darkMode_css = "style_dark.css?v10";
 
 // div elements
