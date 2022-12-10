@@ -57,8 +57,8 @@ body {
     display: block;
     position: absolute;
     z-index: 1;
-    right: 20px;
-    top: 20px;
+    right: 15px;
+    top: 15px;
     cursor: pointer;
     
     height: 25px;
