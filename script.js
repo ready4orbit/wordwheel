@@ -7,12 +7,6 @@ let WORDS = [];
 let CLUES = [];
 let NUMBER_OF_WORDS = 6; // default 6
 let animDelay = 6;
-let inactiveLine = '#aaaaaa'
-let activeLine = '#000000'
-let correctLine = '#63cd66'
-let correctBG = '#c4ebc6'
-let leftLineColor = inactiveLine;
-let rightLineColor = inactiveLine;
 let gameOver = false;
 let gameInterval;
 let listenersLoaded = false; // make sure not to double load listeners
@@ -30,6 +24,10 @@ let curClue = 0;
 let loadGame = '';
 let rewindAmount = dateDifference();
 let enableInput = true; // control keyboard input during hints
+
+// style
+let lightMode_css = "style2.css?v10";
+let darkMode_css = "style_dark.css?v10";
 
 // div elements
 let timerObj = document.getElementById("hint-timer");
@@ -77,7 +75,7 @@ function gameLoader() {
     }
 }
 
-// delete any cookies more than X DEBUG
+// delete any cookies more than X
 function clearoldCookies() {    
     // load the list of previous games going back to 2022-06-04
     var start = new Date("06/04/2022");
@@ -272,8 +270,8 @@ function initBoard() {
     rightLine.id = "game-lines-right"
     
     // create background lines
-    leftLine.style.backgroundColor = inactiveLine;
-    rightLine.style.backgroundColor = inactiveLine;
+    leftLine.className = "js_inactiveLine"
+    rightLine.className = "js_inactiveLine"
     gameLines.appendChild(leftLine)
     gameLines.appendChild(rightLine)
     board.appendChild(gameLines)
@@ -433,8 +431,8 @@ function colorBoxandLine () {
             // if current guess is the correct word, set to green
             if (currentGuess == WORDS[curClue]) {
                 box.classList.add("correct-box");
-                setLineColor('left', correctLine);
-                setLineColor('right', correctLine);
+                document.getElementById("game-lines-left").className = "js_correctLine"
+                document.getElementById("game-lines-right").className = "js_correctLine"
                 
                 // turn off timer
                 runTimer = false;
@@ -461,10 +459,10 @@ function colorBoxandLine () {
                         if (currentGuesses[prevClue] == WORDS[prevClue]) {
                             // set box and line green
                             box.classList.add("correct-box")
-                            setLineColor('left', correctLine)
+                            document.getElementById("game-lines-left").className = "js_correctLine"
                         } else {
                             // if not, set line black
-                            setLineColor('left', activeLine)
+                            document.getElementById("game-lines-left").className = "js_activeLine"
                         }
                     }
 
@@ -480,10 +478,10 @@ function colorBoxandLine () {
                         if (currentGuesses[nextClue] == WORDS[nextClue]) {
                             // set box and line green
                             box.classList.add("correct-box")
-                            setLineColor('right', correctLine)
+                            document.getElementById("game-lines-right").className = "js_correctLine"
                         } else {
                             // if not, set line black
-                            setLineColor('right', activeLine)
+                            document.getElementById("game-lines-right").className = "js_activeLine"
                         }                    
                     }
                 } else {
@@ -499,29 +497,17 @@ function colorBoxandLine () {
                     
                     // if first box, change left line color
                     if (i == 0) { 
-                        setLineColor('left', inactiveLine) 
+                        document.getElementById("game-lines-left").className = "js_inactiveLine"
                     }
 
                     // if last box, change right line color
                     if (i == row.children.length - 1) {
-                        setLineColor('right', inactiveLine)                  
+                        document.getElementById("game-lines-right").className = "js_inactiveLine"
                     }
                 }
             }
         }
     }
-}
-
-function setLineColor(thisLine, thisColor) {
-    // set a given line a given color
-    
-    if (thisLine == 'left') {
-        document.getElementById("game-lines-left").style.backgroundColor = thisColor;
-    } else if (thisLine == 'right') {
-        document.getElementById("game-lines-right").style.backgroundColor = thisColor;
-    }
-    
-    
 }
 
 function createProgress() {
@@ -536,7 +522,7 @@ function createProgress() {
         // if the correct word, make green
         if (currentGuesses[k] == WORDS[k]) {
             // make bright green
-            progressDot.style.color = correctLine;
+            progressDot.className = "js_correctColor";
             
             // if active make blink
             if (k == curClue) {
@@ -544,7 +530,7 @@ function createProgress() {
             }
         } else { // else if not correct, make grey
             // make gray
-            progressDot.style.color = activeLine;
+            progressDot.className = "js_activeColor";
             
             // if active blink
             if (k == curClue) {
@@ -1410,6 +1396,45 @@ function allListeners() {
     })
 }
 
+// set light or dark mode stylesheet
+function setUIMode () {
+    var cookies = document.cookie.split('; ');
+
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].split('=');
+        if (cookie[0] === "ui-mode") {
+            if (cookie[1] === "dark") {
+                document.getElementById("stylesheet").setAttribute("href", darkMode_css);
+            }
+        }
+    }   
+}
+
+setUIMode();
+
+function swapStyle() {
+    // Get the current style sheet
+    var currentStyleSheet = document.getElementById("stylesheet").getAttribute("href");
+    
+    // Determine the next style sheet to use
+    var nextStyleSheet;
+    if (currentStyleSheet === lightMode_css) {
+        nextStyleSheet = darkMode_css;
+        document.cookie = "ui-mode=dark";
+    } else {
+        nextStyleSheet = lightMode_css;
+        document.cookie = "ui-mode=light";
+    }
+
+    // Update the <link> element to use the new style sheet
+    document.getElementById("stylesheet").setAttribute("href", nextStyleSheet);
+}
+
+// attach dark/light mode toggle listener
+document.getElementById("ui_toggle").addEventListener("click", (e) => {   
+    swapStyle();
+})
+
 // attach boot up game function to start button
 document.getElementById("start-button").addEventListener("click", (e) => {   
     gameButton();
@@ -1436,4 +1461,4 @@ document.getElementById("play-more-games").addEventListener("click", (e) => {
 
 document.getElementById("start-button").innerHTML = "Today's game 🗓";
 document.getElementById("random-button").innerHTML = "Random game 🤪";
-document.getElementById("start-button").style.backgroundColor = correctBG;
+document.getElementById("start-button").classList.add("js_correctBG");

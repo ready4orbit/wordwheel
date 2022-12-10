@@ -1,20 +1,20 @@
 :root {
-    --brite-color: #ffffff;
-    --bg-color: #e9e9e9;
+    --brite-color: #1c1c1c;
+    --bg-color: #404040;
     --mid-color: #aaaaaa;
-    --text-color: #000000;
-    --button-bg: #ffffff;
-    --sys-color: #e9e9e9;
-    --ui-toggle: #404040;
+    --text-color: #ffffff;
+    --button-bg: #1c1c1c;
+    --sys-color: #404040;
+    --ui-toggle: #e9e9e9;
     
     --line-inactive: #aaaaaa;
     --line-green: #63cd66;
-    --bg-green: #c4ebc6;
-    --bg-red: #ffb8b8;
-    --copy-red: red;
+    --bg-green: #386e3b;
+    --bg-red: #963030;
+    --copy-red: #ff8585;
     
     --hint-border: #2bc8d9;
-    --hint-bg: #b3f4fb;
+    --hint-bg: #177e8a;
 }
 
 body {
