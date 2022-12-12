@@ -7,10 +7,15 @@ let WORDS = [];
 let CLUES = [];
 let NUMBER_OF_WORDS = 6; // default 6
 let animDelay = 6;
-let gameOver = false;
+let playingGame = false; // is a game going on right now
+let gameOver = false; // is the game over
+var streakLength = 0; // set streak to 0
 let gameInterval;
 let listenersLoaded = false; // make sure not to double load listeners
 let thisDate = new Date();
+
+let lightMode = "style.css";
+let darkMode = "style_dark.css";
 
 // set some variables used to track the game
 let currentGuess = '';
@@ -24,10 +29,6 @@ let curClue = 0;
 let loadGame = '';
 let rewindAmount = dateDifference();
 let enableInput = true; // control keyboard input during hints
-
-// style
-let lightMode_css = "style.css?v11";
-let darkMode_css = "style_dark.css?v11";
 
 // div elements
 let timerObj = document.getElementById("hint-timer");
@@ -43,9 +44,6 @@ function gameButton() {
 
 // check if there is a game and load it, or start a new one
 function gameLoader() {
-    // delete extra cookies to free up space
-    clearoldCookies();
-    
     // starting with today's date, iterate back until you find a game file that exists and load it
     let gameLoaded = false;
     for (let i = 0; gameLoaded == false && i < rewindAmount; i++) {
@@ -75,46 +73,12 @@ function gameLoader() {
     }
 }
 
-// delete any cookies more than X
-function clearoldCookies() {    
-    // load the list of previous games going back to 2022-06-04
-    var start = new Date("06/04/2022");
-    var end = new Date();
-
-
-    var loop = new Date(end);
-    var j = 0;
-    
-    while(start <= loop){
-        var newDate = loop;
-        
-        // see if there is a cookie for that date
-        let data = getCookieValue(readableDate(newDate));
-        if (data != '') { // if there is a cookie for this date
-            // iterate up counter
-            j++;
-            
-            // if counter >=30 delete cookie
-            if (j >= 30 && thisDate != readableDate(newDate)) {
-                // delete cookie
-                // create expiration date in the past  
-                let cookieExpiry = 'expires=Thu, 01 Jan 1970 00:00:01 GMT'
-
-                // add it all together, named after this game date
-                let fullCookie = readableDate(newDate).concat('=0;', cookieExpiry, ';', 'SameSite=Strict', ';')
-
-                // set/update cookie
-                document.cookie = fullCookie
-            }
-        }
-        
-        loop.setDate(loop.getDate() - 1);
-    }
-}
-
 function startGame() {
     // reset clue number
     curClue = 0;
+	
+	// playing game variable
+	playingGame = true;
     
     // hide overlays
     document.getElementById("start-game").style.display = "none";
@@ -140,16 +104,12 @@ function startGame() {
 }
 
 function getCookieValue(name) {
-    const nameString = name + "="
-
-    const value = document.cookie.split(";").filter(item => {
-        return item.includes(nameString)
-    })
-
-    if (value.length) {
-        return value[0].substring(nameString.length, value[0].length)
-    } else {
+    const value = window.localStorage.getItem(name);
+    
+    if (value == null) {
         return ""
+    } else {
+        return value
     }
 }
 
@@ -683,7 +643,7 @@ function insertLetter (pressedKey) {
         colorBoxandLine()
         
         // if correct word, go to next clue
-        if (currentGuess == WORDS[curClue]) {
+        if (currentGuess == WORDS[curClue] && gameOver == false) {
             let delay = 250
             setTimeout(()=> {
                 // after short delay, go to next word
@@ -813,7 +773,22 @@ function readableDate(varDate) {
 }
 
 function setCookie () {
-    // cookie structure: date, guesses, hints, expires
+	// determine streak
+	function isStreak() {
+		// determine if solving day-of to quality for streak status & game over is true
+		let todaysDate = new Date();
+		
+		if (readableDate(thisDate) == readableDate(todaysDate) && gameOver == true) {
+			// solved today's puzzle
+			return true;
+		} else {
+			// didn't solve today's puzzle
+			return false;
+		}
+	}
+	let streakVar = isStreak();
+	
+    // cookie structure: date, guesses, hints, etc
     var cookieObject = {};
     cookieObject.date = readableDate(thisDate);
     cookieObject.guesses = JSON.stringify(currentGuesses);
@@ -821,18 +796,12 @@ function setCookie () {
     cookieObject.timers = JSON.stringify(currentTimers);
     cookieObject.totaltime = totalTimer;
     cookieObject.win = gameOver;
+	cookieObject.streak = streakVar;
+	
     let jsonObject = JSON.stringify(cookieObject);
-    
-    // create expiration date 60 days in the future
-    const futureDate = new Date();
-    futureDate.setTime(futureDate.getTime() + (60*24*60*60*1000));    
-    let cookieExpiry = 'expires='.concat(futureDate.toUTCString())
-    
-    // add it all together, named after this game date
-    let fullCookie = readableDate(thisDate).concat('=',jsonObject,';', cookieExpiry, ';', 'SameSite=Strict', ';')
-    
-    // set/update cookie
-    document.cookie = fullCookie
+	
+    // set local storage
+    window.localStorage.setItem(readableDate(thisDate), jsonObject);
 }
 
 function nextWord () {
@@ -1039,7 +1008,7 @@ function checkGuesses () {
             }
         }
         
-        if (z == WORDS.length) {
+        if (z == WORDS.length && gameOver == false) {
             youWin()
         }
     }
@@ -1229,6 +1198,7 @@ function formatSecs (secs) {
 
 function youWin() {
     gameOver = true;
+	playingGame = false;
     runTimer = false; // pause the timer
     setCookie();
     
@@ -1242,6 +1212,9 @@ function youWin() {
     
     document.getElementById("you-win").style.display = "block";
     
+	// set streak bar
+	setStreakBar();
+	
     // hide keyboard
     document.getElementById("keyboard-cont").style.display = "none";
     
@@ -1295,6 +1268,7 @@ function shareResults() {
         shareText = shareText.concat('\n');
     }
     
+	shareText = shareText.concat('\n', streakLength,' Day Streak\r');
     shareText = shareText.concat('\nCan you do better?\r');
     
     return shareText;
@@ -1396,6 +1370,120 @@ function allListeners() {
     })
 }
 
+// calculate streak
+function calcStreak () {
+	var streakLength = 0;
+	
+	// loop through games going back to 2022-06-04
+    var start = new Date("06/04/2022");
+    var end = new Date();
+	var stillStreak = true;
+
+    var loop = new Date(end);
+    while(start <= loop && stillStreak == true){
+        var newDate = loop;
+		
+        // see if there is a cookie for that date
+        let data = getCookieValue(readableDate(newDate));
+        if (data != '') { // if there is a cookie for this date
+            if (data.substring(0,1) == "=") {
+                // trim first character
+                data = data.substring(1);
+            }
+            var cookieObj = JSON.parse(data);
+			
+            // if game is part of the streak
+            if (cookieObj.streak == true) {				
+                streakLength++;
+            } else {				
+				// if any day but today, end streak
+				if (readableDate(newDate) != readableDate(end)) {
+					stillStreak = false;
+				}
+			}
+        } else {
+            // if any day but today, end streak
+			if (readableDate(newDate) != readableDate(end)) {
+				stillStreak = false;
+			}
+        }
+        
+        loop.setDate(loop.getDate() - 1);
+    }
+	return streakLength;
+}
+
+// set streak bar
+function setStreakBar () {
+	// calculate how long the streak has been
+	streakLength = calcStreak();
+	var streakString = streakLength+' day streak';
+	
+	// calculate length of bar based on streak
+	var bgLength = 0;
+	if (streakLength <= 10) {
+		// less than 10 game streak
+		bgLength = streakLength / 10 * 50;
+	} else if (streakLength > 10 && streakLength <= 20) {
+		// streak between 10 and 20
+		bgLength = 50 + (streakLength - 10) / 10 * 25;
+	} else if (streakLength > 20 && streakLength <= 50) {
+		// streak between 30 and 50
+		bgLength = 75 + (streakLength - 20) / 30 * 25;
+	} else {
+		// greater than 50 game streak
+		bgLength = 100;
+	}
+	
+	// set background based on streak length
+	const allBars = document.querySelectorAll(".streak-bar");
+	allBars.forEach((barInst) => {
+		barInst.innerHTML = streakString;
+		
+		if (gameOver == true) {
+			// if today's game is won, animate bar
+			// Set the starting width
+			var width = 0;
+
+			// Set the amount to increase the width by each frame
+			var barSec = 1; // how long the animation is
+			var barFPS = 60; // how many frames per second
+			var increaseBy = bgLength / (barSec * barFPS);
+
+			// Use setInterval to update the width
+			var interval = setInterval(function() {
+				// Increase the width by the specified amount
+				width += increaseBy;
+
+				// Update the stylesheet
+				var bgPercent = "".concat(width,"%");
+				barInst.style.setProperty("--streak-progress", bgPercent);
+
+				// If the new width is greater than or equal to 100 pixels, stop the animation
+				if (width >= bgLength) {
+					clearInterval(interval);
+				}
+			}, 1000 / 60); // 1 second / 60 frames/second	
+		} else {
+			// if today's game is not played yet, don't animate
+			var bgPercent = "".concat(bgLength,"%");
+			barInst.style.setProperty("--streak-progress", bgPercent);	
+		}
+	});
+}
+setStreakBar();
+
+// style ui mode
+var css_version = function () {
+    var currentStyleSheet = document.getElementById("stylesheet").getAttribute("href");
+    
+    var version = currentStyleSheet.split('?')[1];
+    return version;
+}
+
+let lightMode_css = lightMode.concat("?",css_version());
+let darkMode_css = darkMode.concat("?",css_version());
+
 // set light or dark mode stylesheet
 function setUIMode () {
     var cookies = document.cookie.split('; ');
@@ -1409,7 +1497,6 @@ function setUIMode () {
         }
     }   
 }
-
 setUIMode();
 
 function swapStyle() {

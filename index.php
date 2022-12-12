@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WordWheel</title>
     
-    <link rel="stylesheet" id="stylesheet" href="style.css?v11">
-    <link rel="preload" id="stylesheet" href="style_dark.css?v11">
+    <link rel="stylesheet" id="stylesheet" href="style.css?v12" as="style">
+    <link rel="preload" id="stylesheet" href="style_dark.css?v12" as="style">
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-T31948700P"></script>
@@ -28,16 +28,18 @@
             Use the clues to guess all the words.
             <br/><br/>
             Every 15 seconds, a new letter is revealed.
-            <br/><br/>
         </div>
         <div>
             <button id="start-button" class="system-button">. . Loading . .</button>
             <button id="random-button" class="system-button">. . Loading . .</button>
         </div>
+		<div class="streak-bar">
+			0 Day Streak
+		</div>
     </div>
     <div id="archive">
         <div id="archive-text">
-            <b>Select a puzzle</b>
+            <b>Select a Puzzle</b>
             <div id="archive-scroll">
                 <div class="archive-entry">Loading...</div>
             </div>
@@ -60,6 +62,9 @@
         <div>
             Play <span id="play-more-games">another?</span> 🤔
         </div>
+		<div class="streak-bar">
+			0 Day Streak
+		</div>
     </div>
     <div id="game-container">
         <div id="flex-holder">
@@ -75,7 +80,7 @@
                     <div id="progress-bar">
                     </div>
                     <div class="tool-item">
-                        <button id="hint-timer" class="hint-timer tool-button">15</button>
+                        <button id="hint-timer" class="hint-timer">15</button>
                     </div>
                 </div>
                 <div class="first-row">
@@ -116,6 +121,6 @@
         </div>
     </div>
     
-    <script src="script.js?v10" type="module"></script>
+    <script src="script.js?v13" type="module"></script>
 </body>
 </html>
