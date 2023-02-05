@@ -274,7 +274,8 @@ body {
     font-weight: bold;
 }
 
-#nav_next, #nav_prev {
+.game_nav button {
+	background: var(--sys-color);
 	font-weight: bold;
 }
 
