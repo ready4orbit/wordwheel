@@ -17,6 +17,7 @@
     --hint-bg: #b3f4fb;
 	
 	/*streak gradient */
+	--streak-text: #000000;
 	--streak-progress: 0%;
 	--streak-trans: rgba(255,255,255,0);
 	--streak-bar: #e9e9e9;
@@ -110,12 +111,13 @@ body {
     width: 280px;
 	height: 30px;
 	line-height: 30px;
-	margin-top: 2rem;
+	margin-top: 0rem;
 	padding: 0 10px 0 10px;
     
     border-radius: 0 0 5px 5px;
 	border-top: 1px solid var(--text-color);
     
+	color: var(--streak-text);
     text-align: center;
 	vertical-align: middle;
 	font-size: .9rem;
@@ -130,6 +132,7 @@ body {
 
 #random-button {
     background: var(--sys-color);
+	margin-bottom: 1rem;
 }
 
 #archive {
@@ -258,6 +261,9 @@ body {
 #you-win button {
     margin-top: 1rem;
     margin-bottom: 1rem;
+}
+
+#share-button {
     background-color: var(--bg-green);
 }
 
@@ -266,6 +272,10 @@ body {
     cursor: pointer;
     color: var(--text-color);
     font-weight: bold;
+}
+
+#nav_next, #nav_prev {
+	font-weight: bold;
 }
 
 #game-container {

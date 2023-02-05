@@ -59,11 +59,14 @@
         <div>
             <button id="share-button" class="system-button">Share results</button>
         </div>
-        <div>
-            Play <span id="play-more-games">another?</span> 🤔
+		Play next game?
+        <div class="game_nav">
+            <button id="nav_prev" class="system-button">&#8249;</button>
+			<button id="play-more-games" class="system-button">Archive</button>
+			<button id="nav_next" class="system-button">&#8250;</button>
         </div>
 		<div class="streak-bar">
-			0 Day Streak
+			0% complete
 		</div>
     </div>
     <div id="game-container">
@@ -121,6 +124,6 @@
         </div>
     </div>
     
-    <script src="script.js?v13" type="module"></script>
+    <script src="script.js?v14" type="module"></script>
 </body>
 </html>

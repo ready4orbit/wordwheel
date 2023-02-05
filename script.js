@@ -53,7 +53,7 @@ function gameLoader() {
         
         // create file name
         let fileName = 'games/' + readableDate(newDate) + '.json';
-        
+		
         // See if the file exists
         if(checkFileExist(fileName)){
             // if so, load the file and set the date
@@ -1144,6 +1144,44 @@ function archiveEntryLoad () {
     archiveScroll.appendChild(archiveEntries)
 }
 
+function loadPrev() {
+	// start the previous game (if it exists)
+	var dateOffset = (24*60*60*1000); // 1 day back
+	let newDate = new Date(thisDate.getTime());
+    newDate.setTime(newDate.getTime() - dateOffset);
+        
+	// create file name
+	let fileName = 'games/' + readableDate(newDate) + '.json';
+
+	// See if the file exists
+	if(checkFileExist(fileName)){
+		// if so, set loadgame variable to this date
+    	loadGame = readableDate(newDate);
+		thisDate = newDate;
+    
+    	loadArchive();
+	}
+}
+
+function loadNext() {
+	// start the next game (if it exists)
+	var dateOffset = (24*60*60*1000); // 1 day forward
+    let newDate = new Date(thisDate.getTime());
+    newDate.setTime(newDate.getTime() + dateOffset);
+        
+	// create file name
+	let fileName = 'games/' + readableDate(newDate) + '.json';
+
+	// See if the file exists AND not int he future
+	if(checkFileExist(fileName) && newDate.getTime() < new Date().getTime()){
+		// if so, set loadgame variable to this date
+    	loadGame = readableDate(newDate);
+		thisDate = newDate;
+    
+    	loadArchive();
+	}
+}
+
 function loadRandomGame() {
     // load a random game between now and 06-04-2022
     let start = new Date('06/04/2022');
@@ -1213,7 +1251,7 @@ function youWin() {
     document.getElementById("you-win").style.display = "block";
     
 	// set streak bar
-	setStreakBar();
+	setCompBar();
 	
     // hide keyboard
     document.getElementById("keyboard-cont").style.display = "none";
@@ -1293,13 +1331,24 @@ function allListeners() {
             let pressedKey = String(e.key)
 
             if (pressedKey === "ArrowLeft") {
-                prevWord()
-                return
+				if (gameOver == false) {
+					prevWord()
+                	return
+				} else {
+					loadPrev()
+					return
+				}
+                
             }
 
             if (pressedKey === "ArrowRight") {
-                nextWord()
+				if (gameOver == false) {
+					nextWord()
                 return
+				} else {
+					loadNext()
+					return
+				}
             }
 
             if (gameOver == false) {
@@ -1370,6 +1419,38 @@ function allListeners() {
     })
 }
 
+// calculate completion
+function calcComp () {
+	var compTotal = 0;
+	
+	// loop through games going back to 2022-06-04
+    var start = new Date("06/04/2022");
+    var end = new Date("02/08/2023");
+
+    var loop = new Date(end.getTime());
+    while(start <= loop){
+        var newDate = loop;
+		
+        // see if there is a cookie for that date
+        let data = getCookieValue(readableDate(newDate));
+        if (data != '') { // if there is a cookie for this date
+            if (data.substring(0,1) == "=") {
+                // trim first character
+                data = data.substring(1);
+            }
+            var cookieObj = JSON.parse(data);
+			
+            // if game is part of the streak
+            if (cookieObj.win == true) {				
+                compTotal++;
+			}
+        }
+        
+        loop.setDate(loop.getDate() - 1);
+    }
+	return compTotal;
+}
+
 // calculate streak
 function calcStreak () {
 	var streakLength = 0;
@@ -1413,6 +1494,67 @@ function calcStreak () {
 	return streakLength;
 }
 
+// set completion bar
+function setCompBar () {
+	// calculate completion rate
+	let compRate = calcComp();
+	
+	// turn into a percentage
+	var compPerc = compRate / 250 * 100;
+	
+	if (compPerc == 0) {
+		// if 0%
+	} else {
+		compPerc = Math.floor(compPerc);
+		if (compPerc == 0) {
+			compPerc = 1;
+		}
+	}
+	
+	var compString = compPerc + '% complete';
+	
+	// calculate length of bar based on streak
+	var bgLength = compPerc;
+	
+	// set background based on streak length
+	const allBars = document.querySelectorAll(".streak-bar");
+	allBars.forEach((barInst) => {
+		barInst.innerHTML = compString;
+		
+		if (gameOver == true) {
+			// if today's game is won, animate bar
+			// Set the starting width
+			var width = 0;
+
+			// Set the amount to increase the width by each frame
+			var barSec = 1; // how long the animation is
+			var barFPS = 60; // how many frames per second
+			var increaseBy = bgLength / (barSec * barFPS);
+
+			// Use setInterval to update the width
+			var interval = setInterval(function() {
+				// Increase the width by the specified amount
+				width += increaseBy;
+
+				// Update the stylesheet
+				var bgPercent = "".concat(width,"%");
+				barInst.style.setProperty("--streak-progress", bgPercent);
+
+				// If the new width is greater than or equal to 100 pixels, stop the animation
+				if (width >= bgLength) {
+					clearInterval(interval);
+				}
+			}, 1000 / 60); // 1 second / 60 frames/second	
+		} else {
+			// if today's game is not played yet, don't animate
+			var bgPercent = "".concat(bgLength,"%");
+			barInst.style.setProperty("--streak-progress", bgPercent);	
+		}
+	});
+}
+setCompBar();
+
+/*
 // set streak bar
 function setStreakBar () {
 	// calculate how long the streak has been
@@ -1472,6 +1614,7 @@ function setStreakBar () {
 	});
 }
 setStreakBar();
+*/
 
 // style ui mode
 var css_version = function () {
@@ -1544,6 +1687,14 @@ document.getElementById("logo-cont").addEventListener("click", (e) => {
 // attach archive window to share box
 document.getElementById("play-more-games").addEventListener("click", (e) => {   
     showArchive();
+})
+
+// attach prev/next game buttons
+document.getElementById("nav_prev").addEventListener("click", (e) => {   
+    loadPrev();
+})
+document.getElementById("nav_next").addEventListener("click", (e) => {   
+    loadNext();
 })
 
 document.getElementById("start-button").innerHTML = "Today's game 🗓";
