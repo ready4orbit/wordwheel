@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WordWheel</title>
     
-    <link rel="stylesheet" id="stylesheet" href="style.css?v15" as="style">
-    <link rel="preload" id="stylesheet" href="style_dark.css?v15" as="style">
+    <link rel="stylesheet" id="stylesheet" href="style.css?v16" as="style">
+    <link rel="preload" id="stylesheet" href="style_dark.css?v16" as="style">
     
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-T31948700P"></script>
