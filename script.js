@@ -1250,7 +1250,7 @@ function youWin() {
     
     document.getElementById("you-win").style.display = "block";
     
-	// set streak bar
+	// set completion bar
 	setCompBar();
 	
     // hide keyboard
@@ -1306,7 +1306,6 @@ function shareResults() {
         shareText = shareText.concat('\n');
     }
     
-	shareText = shareText.concat('\n', streakLength,' Day Streak\r');
     shareText = shareText.concat('\nCan you do better?\r');
     
     return shareText;
