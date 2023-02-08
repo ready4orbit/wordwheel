@@ -1330,24 +1330,13 @@ function allListeners() {
             let pressedKey = String(e.key)
 
             if (pressedKey === "ArrowLeft") {
-				if (gameOver == false) {
-					prevWord()
-                	return
-				} else {
-					loadPrev()
-					return
-				}
-                
+				prevWord()
+                return                
             }
 
             if (pressedKey === "ArrowRight") {
-				if (gameOver == false) {
-					nextWord()
+				nextWord()
                 return
-				} else {
-					loadNext()
-					return
-				}
             }
 
             if (gameOver == false) {
