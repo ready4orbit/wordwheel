@@ -1076,9 +1076,9 @@ function archiveEntryLoad () {
     
     let archiveEntries = document.createElement("div")
     
-    // load the list of previous games going back to 2022-06-04
+    // load the list all games
     var start = new Date("06/04/2022");
-    var end = new Date();
+    var end = new Date("02/08/2023");
 
 
     var loop = new Date(end);
