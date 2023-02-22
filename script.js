@@ -39,7 +39,7 @@ function gameButton() {
     document.getElementById("start-button").textContent = ". . Loading . .";
     
     // load game
-    gameLoader();
+    findGameLoader();
 }
 
 // check if there is a game and load it, or start a new one
@@ -69,6 +69,75 @@ function gameLoader() {
                     startGame();
                 })
                 .catch(console.error);
+        }
+    }
+}
+
+function findGameLoader() {
+    // start from the first game, and iterate forward until you find a game that hasn't been played yet
+    let gameLoaded = false;
+	let startDate = new Date("02/09/2023");
+	let endDate = new Date("06/04/2022");
+    for (let i = 0; gameLoaded == false && startDate >= endDate; i++) {
+        var dateOffset = (24*60*60*1000);
+        
+        startDate.setTime(startDate.getTime() - dateOffset); // minus 1 day
+        
+        // create file name
+        let fileName = 'games/' + readableDate(startDate) + '.json';
+		
+        // See if the file exists
+        if(checkFileExist(fileName)){
+            // if so, see if the game has been played
+			
+			// see if there is a cookie for that date
+			let data = getCookieValue(readableDate(startDate));
+			if (data != '') { // if there is a cookie for this date
+				if (data.substring(0,1) == "=") {
+					// trim first character
+					data = data.substring(1);
+				}
+				var cookieObj = JSON.parse(data);
+
+				// load game data
+				let gamewin = false;
+				if (cookieObj.win != undefined) {
+					gamewin = cookieObj.win;
+				}
+
+
+				// is gamewin is false load the game
+				if (!gamewin) {
+					// indicate incomplete game
+					
+					thisDate = startDate; 
+					gameLoaded = true;
+
+					fetch(fileName)
+						.then(response => response.json())
+						.then(data => {
+							WORDS = data.words;
+							CLUES = data.clues;
+
+							startGame();
+						})
+						.catch(console.error);
+				}
+			} else {
+				// no cookie so unplayed game
+				thisDate = startDate; 
+				gameLoaded = true;
+
+				fetch(fileName)
+					.then(response => response.json())
+					.then(data => {
+						WORDS = data.words;
+						CLUES = data.clues;
+
+						startGame();
+					})
+					.catch(console.error);
+			}  
         }
     }
 }
@@ -1685,6 +1754,6 @@ document.getElementById("nav_next").addEventListener("click", (e) => {
     loadNext();
 })
 
-document.getElementById("start-button").innerHTML = "Today's game 🗓";
+document.getElementById("start-button").innerHTML = "Recent game 🗓";
 document.getElementById("random-button").innerHTML = "Random game 🤪";
 document.getElementById("start-button").classList.add("js_correctBG");
