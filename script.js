@@ -82,49 +82,29 @@ function findGameLoader() {
         var dateOffset = (24*60*60*1000);
         
         startDate.setTime(startDate.getTime() - dateOffset); // minus 1 day
-        
-        // create file name
-        let fileName = 'games/' + readableDate(startDate) + '.json';
 		
-        // See if the file exists
-        if(checkFileExist(fileName)){
-            // if so, see if the game has been played
-			
-			// see if there is a cookie for that date
-			let data = getCookieValue(readableDate(startDate));
-			if (data != '') { // if there is a cookie for this date
-				if (data.substring(0,1) == "=") {
-					// trim first character
-					data = data.substring(1);
-				}
-				var cookieObj = JSON.parse(data);
+		// if so, see if the game has been played
 
-				// load game data
-				let gamewin = false;
-				if (cookieObj.win != undefined) {
-					gamewin = cookieObj.win;
-				}
+		// see if there is a cookie for that date
+		let data = getCookieValue(readableDate(startDate));
+		if (data != '') { // if there is a cookie for this date
+			if (data.substring(0,1) == "=") {
+				// trim first character
+				data = data.substring(1);
+			}
+			var cookieObj = JSON.parse(data);
+
+			// load game data
+			let gamewin = false;
+			if (cookieObj.win != undefined) {
+				gamewin = cookieObj.win;
+			}
 
 
-				// is gamewin is false load the game
-				if (!gamewin) {
-					// indicate incomplete game
-					
-					thisDate = startDate; 
-					gameLoaded = true;
+			// is gamewin is false load the game
+			if (!gamewin) {
+				// indicate incomplete game
 
-					fetch(fileName)
-						.then(response => response.json())
-						.then(data => {
-							WORDS = data.words;
-							CLUES = data.clues;
-
-							startGame();
-						})
-						.catch(console.error);
-				}
-			} else {
-				// no cookie so unplayed game
 				thisDate = startDate; 
 				gameLoaded = true;
 
@@ -137,8 +117,22 @@ function findGameLoader() {
 						startGame();
 					})
 					.catch(console.error);
-			}  
-        }
+			}
+		} else {
+			// no cookie so unplayed game
+			thisDate = startDate; 
+			gameLoaded = true;
+
+			fetch(fileName)
+				.then(response => response.json())
+				.then(data => {
+					WORDS = data.words;
+					CLUES = data.clues;
+
+					startGame();
+				})
+				.catch(console.error);
+		}  
     }
 }
 
