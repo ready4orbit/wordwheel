@@ -85,7 +85,7 @@ function findGameLoader() {
 		
 		// if so, see if the game has been played
 		// create file name
-        let fileName = 'games/' + readableDate(newDate) + '.json';
+        let fileName = 'games/' + readableDate(startDate) + '.json';
 
 		// see if there is a cookie for that date
 		let data = getCookieValue(readableDate(startDate));
