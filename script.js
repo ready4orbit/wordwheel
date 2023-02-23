@@ -84,6 +84,8 @@ function findGameLoader() {
         startDate.setTime(startDate.getTime() - dateOffset); // minus 1 day
 		
 		// if so, see if the game has been played
+		// create file name
+        let fileName = 'games/' + readableDate(newDate) + '.json';
 
 		// see if there is a cookie for that date
 		let data = getCookieValue(readableDate(startDate));
@@ -107,7 +109,7 @@ function findGameLoader() {
 
 				thisDate = startDate; 
 				gameLoaded = true;
-
+				
 				fetch(fileName)
 					.then(response => response.json())
 					.then(data => {
